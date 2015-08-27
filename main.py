@@ -14,7 +14,7 @@ class Board():
     spaces that cannot be passed.
     '''
     def __init__(self):
-        board = open('1.txt', 'r')
+        board = open('3.txt', 'r')
         fileData = board.readlines()
         board.close()
         self.parseTextFile(fileData)
@@ -68,11 +68,12 @@ class GUI(tk.Frame):
     
     
     def build(self, board, size):
+        self.size = size
         canvas_width = board.columns * size
         canvas_height = board.rows * size
 
         tk.Frame.__init__(self, None)
-        canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0,
+        self.canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0,
                                     width=canvas_width + size, height=canvas_height + size)
             
         for width in reversed(range(board.rows)):
@@ -91,9 +92,19 @@ class GUI(tk.Frame):
                 else: 
                     fill = 'white'
      
-                canvas.create_rectangle(left, top, right, bottom, fill=fill)
+                self.canvas.create_rectangle(left, top, right, bottom, fill=fill)
 
-        canvas.pack(side="top", fill="both", expand=True)
+        self.canvas.pack(side="top", fill="both", expand=True)
+
+    def drawRectangle(self, node, fill):
+        x = node.x
+        y = board.columns - node.y
+
+        top = (y - 1) * self.size
+        left = x * self.size
+        bottom = top + self.size
+        right = left + self.size
+        self.canvas.create_rectangle(left, top, right, bottom, fill = fill)
 
 
 if __name__ == "__main__":
@@ -102,7 +113,7 @@ if __name__ == "__main__":
     gui = GUI(root)
     gui.build(board, 32)
     gui.pack(side="top", fill="both", expand="true")
-    astar = Astar(board)
+    astar = Astar(board, gui)
     astar.solve()
     root.mainloop()
 

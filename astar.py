@@ -2,7 +2,8 @@ from node import Node
 import heapq
 
 class Astar():
-    def __init__(self, board):
+    def __init__(self, board, gui):
+        self.gui = gui
         self.board = board
         self.opened = []
         self.closed = []
@@ -17,7 +18,11 @@ class Astar():
         while (len(self.opened)):
             current = heapq.heappop(self.opened)[1]
             if current == self.board.endNode:
-                self.drawPath(current)
+                if self.gui == None:
+                    self.printPath(current.predecessor)
+                else:
+                    print(self.opened)
+                    self.drawPath(current.predecessor, 'purple')
                 break
             self.closed.append(current)
             neighbours = self.board.getNeighbours(current)
@@ -37,17 +42,31 @@ class Astar():
                         heapq.heappush(self.opened, (neighbour.f, neighbour))
 
     
-    def drawPath(self, node):
+    def printPath(self, node):
         path = list()
         while True:
             if node.predecessor != None:
-                print(node)
                 path.append(node)
                 node = node.predecessor
             else:
                 break
         print(path)
-    
+
+    def drawPath(self, node, fill):
+        #for node in self.closed:
+        #    self.gui.drawRectangle(node, 'violet')
+        #for x,y in self.opened:
+        #    self.gui.drawRectangle(y, 'violet')
+        while True:
+            if node.predecessor != None:
+                self.gui.drawRectangle(node, fill)
+                node = node.predecessor
+            else:
+                break
+
+    def drawNode(self, node, fill):
+        self.gui.drawRectangle(node, fill)
+
 
 
 
