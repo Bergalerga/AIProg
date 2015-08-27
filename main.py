@@ -5,7 +5,16 @@ import re
 import math
 from astar import Astar
 from node import Node
+from threading import Thread
 
+'''
+(35, 25)
+(3, 12) (21, 3)
+(5, 4, 16, 1)
+(5, 20, 16, 1)
+(21, 5, 1, 16)
+
+'''
 class Board():
 
     '''
@@ -14,12 +23,12 @@ class Board():
     spaces that cannot be passed.
     '''
     def __init__(self):
-        board = open('3.txt', 'r')
+        board = open('2.txt', 'r')
         fileData = board.readlines()
         board.close()
         self.parseTextFile(fileData)
 
-    def parseTextFile(self, fileData):    
+    def parseTextFile(self, fileData):
         boardSize = fileData[0].replace("(","").replace(")","").rstrip().split(",")
         self.rows = int(boardSize[0])
         self.columns = int(boardSize[1])
@@ -71,6 +80,8 @@ class GUI(tk.Frame):
         self.size = size
         canvas_width = board.columns * size
         canvas_height = board.rows * size
+        print(board.rows)
+        print(board.columns)
 
         tk.Frame.__init__(self, None)
         self.canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0,
@@ -78,7 +89,7 @@ class GUI(tk.Frame):
             
         for width in reversed(range(board.rows)):
             for height in (range(board.columns)):
-                top = (board.rows - height - 1) * size
+                top = (board.columns - height - 1) * size
                 left = width * size
                 bottom = top + size
                 right = left + size

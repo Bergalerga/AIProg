@@ -8,6 +8,8 @@ class Node():
         self.predecessor = None
 
     def __lt__(self, other):
+        if self.f == other.f:
+            return self.h < other.h
         return self.f < other.f
 
     def __eq__(self, other):
