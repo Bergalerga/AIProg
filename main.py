@@ -1,0 +1,109 @@
+import Tkinter as tk
+import heapq
+import sys
+import re
+import math
+from astar import Astar
+from node import Node
+
+class Board():
+
+    '''
+    Builds a board with a specified size for each rectangle. Requires the board to have
+    a startnode, endnode, rows and columns. It also requires the isUnwalkable method, for any
+    spaces that cannot be passed.
+    '''
+    def __init__(self):
+        board = open('1.txt', 'r')
+        fileData = board.readlines()
+        board.close()
+        self.parseTextFile(fileData)
+
+    def parseTextFile(self, fileData):    
+        boardSize = fileData[0].replace("(","").replace(")","").rstrip().split(",")
+        self.rows = int(boardSize[0])
+        self.columns = int(boardSize[1])
+
+        startAndStop = re.findall(r'[^,;\s]+', fileData[1].replace("(", "").replace(")", ""))
+        self.startNode = Node(int(startAndStop[0]), int(startAndStop[1]))
+        self.endNode = Node(int(startAndStop[2]), int(startAndStop[3]))
+
+        self.unWalkableAreas = []
+        for elements in fileData[2:]:
+            unWalkable = elements.replace("(","").replace(")","").rstrip().split(",")
+            area = [int(x) for x in unWalkable]
+            self.unWalkableAreas.append(area)
+        
+        self.nodes = list()
+        for y in range(self.columns):
+            x_list = list()
+            for x in range(self.rows):
+                x_list.append(Node(x, y))
+            self.nodes.append(x_list)
+
+    def isUnwalkable(self, node):
+        for elements in self.unWalkableAreas:
+            if node.x >= elements[0] and node.y >= elements[1]:
+                if node.x <= elements[0] + (elements[2] - 1) and node.y <= elements[1] +(elements[3] - 1):                        return True
+        return False
+
+    def distanceToEndNode(self, node):
+        distance = math.fabs(node.x - self.endNode.x)
+        distance += math.fabs(node.y - self.endNode.y)
+        return int(distance) 
+
+    def getNeighbours(self, node):
+        nodes = []
+        if node.x < self.columns - 1: 
+            nodes.append(Node(node.x + 1, node.y))
+        if node.y > 0:
+            nodes.append(Node(node.x, node.y - 1))
+        if node.x > 0:
+            nodes.append(Node(node.x - 1, node.y))
+        if node.y < self.rows - 1:
+            nodes.append(Node(node.x, node.y + 1))
+        return nodes
+
+class GUI(tk.Frame):
+    
+    
+    def build(self, board, size):
+        canvas_width = board.columns * size
+        canvas_height = board.rows * size
+
+        tk.Frame.__init__(self, None)
+        canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0,
+                                    width=canvas_width + size, height=canvas_height + size)
+            
+        for width in reversed(range(board.rows)):
+            for height in (range(board.columns)):
+                top = (board.rows - height - 1) * size
+                left = width * size
+                bottom = top + size
+                right = left + size
+
+                if (board.startNode.x == width and board.startNode.y == height):
+                    fill = 'green'
+                elif (board.endNode.x == width and board.endNode.y == height):
+                    fill = 'grey'
+                elif (board.isUnwalkable(Node(width, height))):
+                    fill = 'red'
+                else: 
+                    fill = 'white'
+     
+                canvas.create_rectangle(left, top, right, bottom, fill=fill)
+
+        canvas.pack(side="top", fill="both", expand=True)
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    board = Board()
+    gui = GUI(root)
+    gui.build(board, 32)
+    gui.pack(side="top", fill="both", expand="true")
+    astar = Astar(board)
+    astar.solve()
+    root.mainloop()
+
+
