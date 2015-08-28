@@ -7,11 +7,11 @@ class Astar():
         self.board = board
         self.opened = []
         self.closed = []
+        
+
+    def solveAstar(self):
+
         heapq.heapify(self.opened)
-
-    def solve(self):
-        #Setting heuristic values for all nodes
-
         self.board.startNode.f = self.board.distanceToEndNode(self.board.startNode)
         heapq.heappush(self.opened, (self.board.startNode.f, self.board.startNode.h, self.board.startNode))
         
@@ -43,7 +43,48 @@ class Astar():
                         heapq.heappush(self.opened, (neighbour.f, neighbour.h, neighbour))
                         self.drawNode(neighbour, 'violet')
 
-    
+    def solveBFS(self):
+        start = self.board.startNode
+        self.opened.append(start)
+        while True:
+            current = self.opened.pop(0)
+            print(self.opened)
+            self.closed.append(current)
+
+            if current == self.board.endNode:
+                self.drawPath(current, 'purple')
+                break
+
+            neighbours = self.board.getNeighbours(current)
+            for neighbour in neighbours:
+                if self.board.isUnwalkable(neighbour):
+                    continue
+                if neighbour not in self.closed and neighbour not in self.opened:
+                    self.opened.append(neighbour)
+                    neighbour.predecessor = current
+                    self.drawNode(neighbour, 'violet')
+
+    def solveDFS(self):
+        start = self.board.startNode
+        self.opened.append(start)
+        while True:
+            current = self.opened.pop(-1)
+            self.closed.append(current)
+
+            if current == self.board.endNode:
+                self.drawPath(current, 'purple')
+                break
+
+            neighbours = self.board.getNeighbours(current)
+            for neighbour in neighbours:
+                if self.board.isUnwalkable(neighbour):
+                    continue
+                if neighbour not in self.opened and neighbour not in self.closed:
+                    self.opened.append(neighbour)
+                    neighbour.predecessor = current
+                    self.drawNode(neighbour, 'violet')
+
+
     def printPath(self, node):
         path = list()
         while True:
