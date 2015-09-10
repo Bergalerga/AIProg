@@ -7,6 +7,7 @@ from astar import Astar
 from node import Node
 from threading import Thread
 from tkFileDialog import askopenfilename
+import time
 
 '''
 (35, 25)
@@ -76,15 +77,14 @@ class Board():
 
 class GUI(tk.Frame):
     
-    
     def build(self, board, size):
         self.size = size
         canvas_width = board.columns * size
         canvas_height = board.rows * size
 
-        tk.Frame.__init__(self, None)
+        self.frame = tk.Frame(self, None)
         self.canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0,
-                                    width=canvas_width + size, height=canvas_height + size)
+                                    width=canvas_width, height=canvas_height)
             
         for width in reversed(range(board.rows)):
             for height in (range(board.columns)):
@@ -104,7 +104,7 @@ class GUI(tk.Frame):
      
                 self.canvas.create_rectangle(left, top, right, bottom, fill=fill)
 
-        self.canvas.pack(side="top", fill="both", expand=True)
+        self.canvas.pack()
 
     def drawRectangle(self, node, fill):
         x = node.x
@@ -115,6 +115,17 @@ class GUI(tk.Frame):
         bottom = top + self.size
         right = left + self.size
         self.canvas.create_rectangle(left, top, right, bottom, fill = fill)
+
+    def clear(self):
+        self.frame.pack_forget()
+        self.frame.destroy()
+        self.canvas.destroy()
+        self.canvas = None
+        self.frame = None
+        self.root.destroy()
+        
+
+gui = None
 
 def donothing():
    filewin = Toplevel(root)
@@ -133,10 +144,15 @@ def solveDFS():
 def openBoard():
     filename = askopenfilename(parent=root)
     board = Board(filename)
+    global gui
+    if gui != None:
+        gui.clear()
+
     gui = GUI(root)
     gui.build(board, 32)
-    gui.pack(side="top", fill="both", expand="true")
+    gui.pack(side="top", fill="both", expand="false")
     astar = Astar(board, gui)
+
 
 def makeMenu(root):
         menubar = tk.Menu(root)
