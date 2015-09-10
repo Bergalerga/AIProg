@@ -80,8 +80,6 @@ class GUI(tk.Frame):
         self.size = size
         canvas_width = board.columns * size
         canvas_height = board.rows * size
-        print(board.rows)
-        print(board.columns)
 
         tk.Frame.__init__(self, None)
         self.canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0,
@@ -145,7 +143,7 @@ if __name__ == "__main__":
     gui.build(board, 32)
     gui.pack(side="top", fill="both", expand="true")
     astar = Astar(board, gui)
-    astar.solve()
+    astar.solveDFS()
     root.mainloop()
 
 

@@ -8,13 +8,13 @@ class Astar():
         self.board = board
         self.opened = []
         self.closed = []
-        heapq.heapify(self.opened)
+        
 
-    def solve(self):
-        #Setting heuristic values for all nodes
+    def solveAstar(self):
 
         self.board.startNode.h = self.board.distanceToEndNode(self.board.startNode)
         self.board.startNode.f = self.board.startNode.g + self.board.startNode.h
+        heapq.heapify(self.opened)
         heapq.heappush(self.opened, (self.board.startNode.f, self.board.startNode.h, self.board.startNode))
         
         while (len(self.opened)):
@@ -28,7 +28,6 @@ class Astar():
                 break
             neighbours = self.board.getNeighbours(current)
             
-            #Denne delen er jeg usikker paa om er riktig, passer vi paa aa oppdatere barns G ++? Pseudokoden i Keiths doc er litt annerledes
             for neighbour in neighbours:
                 current.children.append(neighbour)
 
@@ -59,6 +58,47 @@ class Astar():
                 child.g = predecessor.g +1
                 child.f = child.g + child.h
                 propagate(child)
+
+    def solveBFS(self):
+        start = self.board.startNode
+        self.opened.append(start)
+        while True:
+            current = self.opened.pop(0)
+            print(self.opened)
+            self.closed.append(current)
+
+            if current == self.board.endNode:
+                self.drawPath(current, 'purple')
+                break
+
+            neighbours = self.board.getNeighbours(current)
+            for neighbour in neighbours:
+                if self.board.isUnwalkable(neighbour):
+                    continue
+                if neighbour not in self.closed and neighbour not in self.opened:
+                    self.opened.append(neighbour)
+                    neighbour.predecessor = current
+                    self.drawNode(neighbour, 'violet')
+
+    def solveDFS(self):
+        start = self.board.startNode
+        self.opened.append(start)
+        while True:
+            current = self.opened.pop(-1)
+            self.closed.append(current)
+
+            if current == self.board.endNode:
+                self.drawPath(current, 'purple')
+                break
+
+            neighbours = self.board.getNeighbours(current)
+            for neighbour in neighbours:
+                if self.board.isUnwalkable(neighbour):
+                    continue
+                if neighbour not in self.opened and neighbour not in self.closed:
+                    self.opened.append(neighbour)
+                    neighbour.predecessor = current
+                    self.drawNode(neighbour, 'violet')
 
     def printPath(self, node):
         path = list()
