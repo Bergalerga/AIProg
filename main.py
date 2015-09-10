@@ -23,7 +23,7 @@ class Board():
     spaces that cannot be passed.
     '''
     def __init__(self):
-        board = open('2.txt', 'r')
+        board = open('5.txt', 'r')
         fileData = board.readlines()
         board.close()
         self.parseTextFile(fileData)
@@ -117,9 +117,29 @@ class GUI(tk.Frame):
         right = left + self.size
         self.canvas.create_rectangle(left, top, right, bottom, fill = fill)
 
+    def makeMenu(self, root):
+        menubar = Menu(root)
+        boardmenu = Menu(menubar, tearoff=0)
+        boardmenu.add_command(label='1.txt', command=donothing)
+        boardmenu.add_command(label='2.txt', command=donothing)
+        boardmenu.add_command(label='3.txt', command=donothing)
+        boardmenu.add_command(label='4.txt', command=donothing)
+        boardmenu.add_command(label='5.txt', command=donothing)
+        menubar.add_cascade(label='Board', menu=boardmenu)
+
+        typemenu = Menu(menubar, tearoff=0)
+        typemenu.add_command(label='BFS', command=donothing)
+        typemenu.add_command(label='DFS', command=donothing)
+        typemenu.add_command(label='Best first', command=donothing)
+        menubar.add_cascade(label='Type', menu=typemenu)
+
+
+
+
 
 if __name__ == "__main__":
     root = tk.Tk()
+    #makeMenu(root)
     board = Board()
     gui = GUI(root)
     gui.build(board, 32)
