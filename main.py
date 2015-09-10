@@ -116,13 +116,20 @@ class GUI(tk.Frame):
         right = left + self.size
         self.canvas.create_rectangle(left, top, right, bottom, fill = fill)
 
+    def drawPath(self, node):
+        while True:
+            if node.predecessor:
+                self.drawRectangle(node, 'black')
+                node = node.predecessor
+            else:
+                break
+
     def clear(self):
         self.frame.pack_forget()
         self.frame.destroy()
         self.canvas.destroy()
         self.canvas = None
         self.frame = None
-        self.root.destroy()
         
 
 gui = None
@@ -133,7 +140,10 @@ def donothing():
    button.pack()
 
 def solveAstar():
-    astar.solve('A*')
+    print("triggered")
+    for step in astar.solve('A*'):
+        print(step)
+        root.after(200, gui.drawPath(step))
 
 def solveBFS():
     astar.solve('BFS')

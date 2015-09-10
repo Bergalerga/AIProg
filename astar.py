@@ -53,7 +53,7 @@ class Astar():
                     self.evaluate(neighbour, current)
                     if neighbour in self.closed:
                         self.propagate(neighbour)    
-
+                yield current
 
     def evaluate(self, child, predecessor):
         child.predecessor = predecessor
@@ -76,7 +76,7 @@ class Astar():
                 node = node.predecessor
             else:
                 break
-        print(path)
+        #print(path)
 
     def drawPath(self, node, fill):
 
