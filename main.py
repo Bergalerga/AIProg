@@ -6,6 +6,7 @@ import math
 from astar import Astar
 from node import Node
 from threading import Thread
+from tkFileDialog import askopenfilename
 
 '''
 (35, 25)
@@ -22,8 +23,8 @@ class Board():
     a startnode, endnode, rows and columns. It also requires the isUnwalkable method, for any
     spaces that cannot be passed.
     '''
-    def __init__(self):
-        board = open('5.txt', 'r')
+    def __init__(self, filename):
+        board = open(filename, 'r')
         fileData = board.readlines()
         board.close()
         self.parseTextFile(fileData)
@@ -115,35 +116,46 @@ class GUI(tk.Frame):
         right = left + self.size
         self.canvas.create_rectangle(left, top, right, bottom, fill = fill)
 
-    def makeMenu(self, root):
-        menubar = Menu(root)
-        boardmenu = Menu(menubar, tearoff=0)
-        boardmenu.add_command(label='1.txt', command=donothing)
-        boardmenu.add_command(label='2.txt', command=donothing)
-        boardmenu.add_command(label='3.txt', command=donothing)
-        boardmenu.add_command(label='4.txt', command=donothing)
-        boardmenu.add_command(label='5.txt', command=donothing)
-        menubar.add_cascade(label='Board', menu=boardmenu)
+def donothing():
+   filewin = Toplevel(root)
+   button = Button(filewin, text="Do nothing button")
+   button.pack()
 
-        typemenu = Menu(menubar, tearoff=0)
-        typemenu.add_command(label='BFS', command=donothing)
-        typemenu.add_command(label='DFS', command=donothing)
-        typemenu.add_command(label='Best first', command=donothing)
-        menubar.add_cascade(label='Type', menu=typemenu)
+def solveAstar():
+    astar.solveAstar()
 
+def solveBFS():
+    astar.solveBFS()
 
+def solveDFS():
+    astar.solveDFS()
 
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    #makeMenu(root)
-    board = Board()
+def openBoard():
+    filename = askopenfilename(parent=root)
+    board = Board(filename)
     gui = GUI(root)
     gui.build(board, 32)
     gui.pack(side="top", fill="both", expand="true")
     astar = Astar(board, gui)
-    astar.solveDFS()
+
+def makeMenu(root):
+        menubar = tk.Menu(root)
+        boardmenu = tk.Menu(menubar, tearoff=0)
+        boardmenu.add_command(label='Open file', command=openBoard)
+        menubar.add_cascade(label='Board', menu=boardmenu)
+
+        typemenu = tk.Menu(menubar, tearoff=0)
+        typemenu.add_command(label='BFS', command=solveBFS)
+        typemenu.add_command(label='DFS', command=solveDFS)
+        typemenu.add_command(label='Best first', command=solveAstar)
+        menubar.add_cascade(label='Type', menu=typemenu)
+
+        root.config(menu=menubar)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    makeMenu(root)
+    
     root.mainloop()
 
 
