@@ -122,13 +122,13 @@ def donothing():
    button.pack()
 
 def solveAstar():
-    astar.solveAstar()
+    astar.solve('A*')
 
 def solveBFS():
-    astar.solveBFS()
+    astar.solve('BFS')
 
 def solveDFS():
-    astar.solveDFS()
+    astar.solve('DFS')
 
 def openBoard():
     filename = askopenfilename(parent=root)
@@ -155,7 +155,11 @@ def makeMenu(root):
 if __name__ == "__main__":
     root = tk.Tk()
     makeMenu(root)
-    
+    board = Board('4.txt')
+    gui = GUI(root)
+    gui.build(board, 32)
+    gui.pack(side="top", fill="both", expand="true")
+    astar = Astar(board, gui)
     root.mainloop()
 
 

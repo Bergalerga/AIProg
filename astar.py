@@ -3,22 +3,28 @@ import heapq
 
 class Astar():
     def __init__(self, board, gui):
-        #trenger vi gui og board her, eller burde vi ikke ha det?
         self.gui = gui
         self.board = board
         self.opened = []
         self.closed = []
-        
 
-    def solveAstar(self):
+    def solve(self, mode):
 
         self.board.startNode.h = self.board.distanceToEndNode(self.board.startNode)
         self.board.startNode.f = self.board.startNode.g + self.board.startNode.h
-        heapq.heapify(self.opened)
-        heapq.heappush(self.opened, (self.board.startNode.f, self.board.startNode.h, self.board.startNode))
+        if mode == 'A*':
+            heapq.heapify(self.opened)
+            heapq.heappush(self.opened, self.board.startNode)
+        else:
+            self.opened.append(self.board.startNode)
         
         while (len(self.opened)):
-            current = heapq.heappop(self.opened)[2]
+            if mode == 'A*':
+                current = heapq.heappop(self.opened)
+            elif mode =='DFS':
+                current = self.opened.pop(-1)
+            else:
+                current = self.opened.pop(0)
             self.closed.append(current)
             if current == self.board.endNode:
                 if self.gui == None:
@@ -36,10 +42,13 @@ class Astar():
 
                 temporary_g = current.g + 1
 
-                if (neighbour.f, neighbour.h, neighbour) not in self.opened and neighbour not in self.closed:
+                if neighbour not in self.opened and neighbour not in self.closed:
                     self.evaluate(neighbour, current)
-                    heapq.heappush(self.opened, (neighbour.f, neighbour.h, neighbour))
-                    self.drawNode(neighbour, 'violet')
+                    if mode == 'A*':
+                        heapq.heappush(self.opened, neighbour)
+                    else:
+                        self.opened.append(neighbour)
+                    #self.drawNode(neighbour, 'violet')
                 elif temporary_g < neighbour.g:
                     self.evaluate(neighbour, current)
                     if neighbour in self.closed:
@@ -58,47 +67,6 @@ class Astar():
                 child.g = predecessor.g +1
                 child.f = child.g + child.h
                 propagate(child)
-
-    def solveBFS(self):
-        start = self.board.startNode
-        self.opened.append(start)
-        while True:
-            current = self.opened.pop(0)
-            print(self.opened)
-            self.closed.append(current)
-
-            if current == self.board.endNode:
-                self.drawPath(current, 'purple')
-                break
-
-            neighbours = self.board.getNeighbours(current)
-            for neighbour in neighbours:
-                if self.board.isUnwalkable(neighbour):
-                    continue
-                if neighbour not in self.closed and neighbour not in self.opened:
-                    self.opened.append(neighbour)
-                    neighbour.predecessor = current
-                    self.drawNode(neighbour, 'violet')
-
-    def solveDFS(self):
-        start = self.board.startNode
-        self.opened.append(start)
-        while True:
-            current = self.opened.pop(-1)
-            self.closed.append(current)
-
-            if current == self.board.endNode:
-                self.drawPath(current, 'purple')
-                break
-
-            neighbours = self.board.getNeighbours(current)
-            for neighbour in neighbours:
-                if self.board.isUnwalkable(neighbour):
-                    continue
-                if neighbour not in self.opened and neighbour not in self.closed:
-                    self.opened.append(neighbour)
-                    neighbour.predecessor = current
-                    self.drawNode(neighbour, 'violet')
 
     def printPath(self, node):
         path = list()
