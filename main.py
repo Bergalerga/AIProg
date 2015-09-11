@@ -149,10 +149,22 @@ def solveAstar():
         print("done")
 
 def solveBFS():
-    astar.solve('BFS')
+    current = astar.solve('BFS')
+    if current != False:
+        gui.drawPath(current)
+        gui.canvas.pack()
+        root.after(100, solveBFS)
+    else:
+        print("done")
 
 def solveDFS():
-    astar.solve('DFS')
+    current = astar.solve('DFS')
+    if current != False:
+        gui.drawPath(current)
+        gui.canvas.pack()
+        root.after(100, solveDFS)
+    else:
+        print("done")
 
 def openBoard():
     filename = askopenfilename(parent=root)
