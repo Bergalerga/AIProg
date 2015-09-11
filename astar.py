@@ -7,53 +7,58 @@ class Astar():
         self.board = board
         self.opened = []
         self.closed = []
+        self.current = self.board.startNode
+        self.board.startNode.h = self.board.distanceToEndNode(self.board.startNode)
+        self.board.startNode.f = self.board.startNode.g + self.board.startNode.h
+        self.opened.append(self.current)
 
     def solve(self, mode):
 
-        self.board.startNode.h = self.board.distanceToEndNode(self.board.startNode)
-        self.board.startNode.f = self.board.startNode.g + self.board.startNode.h
-        if mode == 'A*':
-            heapq.heapify(self.opened)
-            heapq.heappush(self.opened, self.board.startNode)
-        else:
-            self.opened.append(self.board.startNode)
         
-        while (len(self.opened)):
+        if mode == 'A*':
+            heapq.heapify(self.opened)   
+        
+        if (len(self.opened)):
             if mode == 'A*':
-                current = heapq.heappop(self.opened)
+                self.current = heapq.heappop(self.opened)
             elif mode =='DFS':
-                current = self.opened.pop(-1)
+                self.current = self.opened.pop(-1)
             else:
-                current = self.opened.pop(0)
-            self.closed.append(current)
-            if current == self.board.endNode:
+                self.current = self.opened.pop(0)
+            self.closed.append(self.current)
+            if self.current == self.board.endNode:
                 if self.gui == None:
-                    self.printPath(current.predecessor)
+                    pass
+                    #self.printPath(current.predecessor)
                 else:
-                    self.drawPath(current.predecessor, 'purple')
-                break
-            neighbours = self.board.getNeighbours(current)
+                    return False
+                    #pass
+                    #self.drawPath(current.predecessor, 'purple')
+                #break
+            neighbours = self.board.getNeighbours(self.current)
             
             for neighbour in neighbours:
-                current.children.append(neighbour)
+                self.current.children.append(neighbour)
 
                 if self.board.isUnwalkable(neighbour):
                     continue
 
-                temporary_g = current.g + 1
+                temporary_g = self.current.g + 1
 
                 if neighbour not in self.opened and neighbour not in self.closed:
-                    self.evaluate(neighbour, current)
+
+                    self.evaluate(neighbour, self.current)
                     if mode == 'A*':
                         heapq.heappush(self.opened, neighbour)
                     else:
                         self.opened.append(neighbour)
                     #self.drawNode(neighbour, 'violet')
                 elif temporary_g < neighbour.g:
-                    self.evaluate(neighbour, current)
+                    self.evaluate(neighbour, self.current)
                     if neighbour in self.closed:
-                        self.propagate(neighbour)    
-                yield current
+                        self.propagate(neighbour)
+            print(self.current)
+            return self.current
 
     def evaluate(self, child, predecessor):
         child.predecessor = predecessor

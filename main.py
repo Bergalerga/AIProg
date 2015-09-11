@@ -78,6 +78,7 @@ class Board():
 class GUI(tk.Frame):
     
     def build(self, board, size):
+        self.board = board
         self.size = size
         canvas_width = board.columns * size
         canvas_height = board.rows * size
@@ -114,15 +115,14 @@ class GUI(tk.Frame):
         left = x * self.size
         bottom = top + self.size
         right = left + self.size
+        #print "draw at %s, %s, %s, %s" % (left, top, right, bottom)
         self.canvas.create_rectangle(left, top, right, bottom, fill = fill)
+        self.canvas.pack()
+
 
     def drawPath(self, node):
-        while True:
-            if node.predecessor:
-                self.drawRectangle(node, 'black')
-                node = node.predecessor
-            else:
-                break
+        if node != self.board.startNode or node != self.board.endNode:
+            self.drawRectangle(node, 'black')
 
     def clear(self):
         self.frame.pack_forget()
@@ -140,10 +140,13 @@ def donothing():
    button.pack()
 
 def solveAstar():
-    print("triggered")
-    for step in astar.solve('A*'):
-        print(step)
-        root.after(200, gui.drawPath(step))
+    current = astar.solve('A*')
+    if current != False:
+        gui.drawPath(current)
+        gui.canvas.pack()
+        root.after(1000, solveAstar)
+    else:
+        print("done")
 
 def solveBFS():
     astar.solve('BFS')
@@ -181,7 +184,7 @@ def makeMenu(root):
 if __name__ == "__main__":
     root = tk.Tk()
     makeMenu(root)
-    board = Board('4.txt')
+    board = Board('3.txt')
     gui = GUI(root)
     gui.build(board, 32)
     gui.pack(side="top", fill="both", expand="true")
