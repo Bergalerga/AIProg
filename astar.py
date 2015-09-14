@@ -8,7 +8,6 @@ class Astar():
         self.opened = []
         self.closed = []
         self.current = self.board.startNode
-
         self.board.startNode.h = self.board.distanceToEndNode(self.board.startNode)
         self.board.startNode.f = self.board.startNode.g + self.board.startNode.h
         self.opened.append(self.current)
@@ -32,14 +31,9 @@ class Astar():
                             
             self.closed.append(self.current)
             if self.current == self.board.endNode:
-                if self.gui == None:
-                    pass
-                    #self.printPath(current.predecessor)
-                else:
-                    return False
-                    #pass
-                    #self.drawPath(current.predecessor, 'purple')
-                #break
+                self.clear()
+                self.current = False
+                return self.current
             neighbours = self.board.getNeighbours(self.current)
             
             for neighbour in neighbours:
@@ -101,6 +95,14 @@ class Astar():
 
     def drawNode(self, node, fill):
         self.gui.drawRectangle(node, fill)
+
+    def clear(self):
+        self.opened = []
+        self.closed = []
+        self.current = self.board.startNode
+        self.board.startNode.h = self.board.distanceToEndNode(self.board.startNode)
+        self.board.startNode.f = self.board.startNode.g + self.board.startNode.h
+        self.opened.append(self.current)
 
 
 

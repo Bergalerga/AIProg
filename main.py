@@ -77,16 +77,18 @@ class Board():
 
 class GUI(tk.Frame):
     
+    def __init__(self, parent):
+        tk.Frame.__init__(self, parent)
+        self.parent = parent
+        self.canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0, width=600, height=600)
+
     def build(self, board, size):
         self.board = board
         self.size = size
-        canvas_width = board.columns * size
-        canvas_height = board.rows * size
 
         self.frame = tk.Frame(self, None)
         self.frame.grid(column=0, row=0)
-        self.canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0,
-                                    width=canvas_width, height=canvas_height)
+        
             
         for width in reversed(range(board.rows)):
             for height in (range(board.columns)):
@@ -123,14 +125,10 @@ class GUI(tk.Frame):
 
     def drawPath(self, node):
         if node != self.board.startNode or node != self.board.endNode:
-            self.drawRectangle(node, 'black')        
+            self.drawRectangle(node, 'black')
 
-gui = None
-
-def donothing():
-   filewin = Toplevel(root)
-   button = Button(filewin, text="Do nothing button")
-   button.pack()
+    def clear(self):
+        self.canvas.delete("all")        
 
 def solveAstar():
     current = astar.solve('A*')
@@ -164,33 +162,64 @@ def openBoard():
     global board
     board = Board(filename)
     global gui
+    if gui == None:
+        gui = GUI(root)
     if gui != None:
         gui.clear()
 
-    gui = GUI(root)
-    gui.build(board, 32)
+    gui.build(board, 16)
     gui.pack(side="top", fill="both", expand="false")
     global astar
     astar = Astar(board, gui)
 
 
-def makeMenu(root):
+class Controller(object):
+    """
+
+    """
+
+    def __init__(self, gui=None):
+        """
+        Constructor
+        """
+
+        self.gui = gui
+        self.flags = {'first_run': True}
+
+    def solve(self, alg='best-first'):
+        self.reset()
+        self.gui.build(board, 16)
+        if alg == 'best-first':
+            solveAstar()
+        elif alg == 'bfs':
+            solveBFS()
+        else: 
+            solveDFS()
+
+    def reset(self):
+        self.gui.clear()
+        # clear board
+
+def makeMenu(root, controller):
         menubar = tk.Menu(root)
         boardmenu = tk.Menu(menubar, tearoff=0)
         boardmenu.add_command(label='Open file', command=openBoard)
         menubar.add_cascade(label='Board', menu=boardmenu)
 
         typemenu = tk.Menu(menubar, tearoff=0)
-        typemenu.add_command(label='BFS', command=solveBFS)
-        typemenu.add_command(label='DFS', command=solveDFS)
-        typemenu.add_command(label='Best first', command=solveAstar)
+        typemenu.add_command(label='BFS', command=lambda alg='bfs': controller.solve(alg))
+        typemenu.add_command(label='DFS', command=lambda alg='dfs': controller.solve(alg))
+        typemenu.add_command(label='Best first', command=lambda alg='best-first': controller.solve(alg))
         menubar.add_cascade(label='Type', menu=typemenu)
 
         root.config(menu=menubar)
 
 if __name__ == "__main__":
+    global gui
     root = tk.Tk()
-    makeMenu(root)
+    gui = GUI(root)
+    controller = Controller(gui=gui)
+    makeMenu(root, controller)
     root.mainloop()
 
 
