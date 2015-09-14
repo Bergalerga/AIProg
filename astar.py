@@ -62,7 +62,7 @@ class Astar():
                     self.evaluate(neighbour, self.current)
                     if neighbour in self.closed:
                         self.propagate(neighbour)
-            print [self.opened[x].h for x in range(len(self.opened))]
+            #print [self.opened[x].h for x in range(len(self.opened))]
             return self.current
 
     def evaluate(self, child, predecessor):

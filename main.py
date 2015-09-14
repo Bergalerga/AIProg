@@ -84,6 +84,7 @@ class GUI(tk.Frame):
         canvas_height = board.rows * size
 
         self.frame = tk.Frame(self, None)
+        self.frame.grid(column=0, row=0)
         self.canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0,
                                     width=canvas_width, height=canvas_height)
             
@@ -122,15 +123,7 @@ class GUI(tk.Frame):
 
     def drawPath(self, node):
         if node != self.board.startNode or node != self.board.endNode:
-            self.drawRectangle(node, 'black')
-
-    def clear(self):
-        self.frame.pack_forget()
-        self.frame.destroy()
-        self.canvas.destroy()
-        self.canvas = None
-        self.frame = None
-        
+            self.drawRectangle(node, 'black')        
 
 gui = None
 
@@ -168,6 +161,7 @@ def solveDFS():
 
 def openBoard():
     filename = askopenfilename(parent=root)
+    global board
     board = Board(filename)
     global gui
     if gui != None:
@@ -176,6 +170,7 @@ def openBoard():
     gui = GUI(root)
     gui.build(board, 32)
     gui.pack(side="top", fill="both", expand="false")
+    global astar
     astar = Astar(board, gui)
 
 
@@ -196,11 +191,6 @@ def makeMenu(root):
 if __name__ == "__main__":
     root = tk.Tk()
     makeMenu(root)
-    board = Board('3.txt')
-    gui = GUI(root)
-    gui.build(board, 32)
-    gui.pack(side="top", fill="both", expand="true")
-    astar = Astar(board, gui)
     root.mainloop()
 
 
