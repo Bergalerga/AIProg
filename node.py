@@ -13,11 +13,32 @@ class Node():
         self.children = []
 
     # For aa sortere heapq
+    
     def __lt__(self, other):
         if self.f == other.f:
             return self.h < other.h
         return self.f < other.f
 
+    def __gt__(self, other):
+        if self.f == other.f:
+            return self.h > other.h
+        return self.f > other.f
+
+    def __le__(self, other):
+        if self.f == other.f:
+            return self.h <= other.h
+        return self.f <= other.f
+
+    def __ge__(self, other):
+        if self.f == other.f:
+            return self.h >= other.h
+        return self.f >= other.f
+    '''
+    def __cmp__(self, other):
+        if self.f == other.f:
+            return self.h < other.h
+        return self.f < other.f
+    '''
     # For aa sjekke om to noder er like
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y

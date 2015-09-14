@@ -8,9 +8,13 @@ class Astar():
         self.opened = []
         self.closed = []
         self.current = self.board.startNode
+
         self.board.startNode.h = self.board.distanceToEndNode(self.board.startNode)
         self.board.startNode.f = self.board.startNode.g + self.board.startNode.h
         self.opened.append(self.current)
+
+    def setHValues(self):
+        return
 
     def solve(self, mode):
 
@@ -25,6 +29,7 @@ class Astar():
                 self.current = self.opened.pop(-1)
             else:
                 self.current = self.opened.pop(0)
+                            
             self.closed.append(self.current)
             if self.current == self.board.endNode:
                 if self.gui == None:
@@ -57,19 +62,21 @@ class Astar():
                     self.evaluate(neighbour, self.current)
                     if neighbour in self.closed:
                         self.propagate(neighbour)
-            print(self.current)
+            print [self.opened[x].h for x in range(len(self.opened))]
             return self.current
 
     def evaluate(self, child, predecessor):
         child.predecessor = predecessor
         child.g = predecessor.g + 1
-        child.f = child.g + self.board.distanceToEndNode(child)
+        child.h = self.board.distanceToEndNode(child)
+        child.f = child.g + child.h
 
     def propagate(self, predecessor):
         for child in predecessor.children:
             if (predecessor.g+1) < child.g:
                 child.predecessor = predecessor
                 child.g = predecessor.g +1
+                child.h = self.board.distanceToEndNode(child)
                 child.f = child.g + child.h
                 propagate(child)
 

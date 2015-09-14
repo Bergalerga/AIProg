@@ -144,7 +144,7 @@ def solveAstar():
     if current != False:
         gui.drawPath(current)
         gui.canvas.pack()
-        root.after(1000, solveAstar)
+        root.after(100, solveAstar)
     else:
         print("done")
 
