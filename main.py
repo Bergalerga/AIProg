@@ -1,36 +1,34 @@
 import Tkinter as tk
+from tkFileDialog import askopenfilename
+
+from astar import Astar
+from node import Node
+
 import heapq
 import sys
 import re
 import math
-from astar import Astar
-from node import Node
-from threading import Thread
-from tkFileDialog import askopenfilename
-import time
 
-'''
-(35, 25)
-(3, 12) (21, 3)
-(5, 4, 16, 1)
-(5, 20, 16, 1)
-(21, 5, 1, 16)
 
-'''
 class Board():
+    '''
+    Responsible for the board that the gui and astar needs.
+    '''
 
-    '''
-    Builds a board with a specified size for each rectangle. Requires the board to have
-    a startnode, endnode, rows and columns. It also requires the isUnwalkable method, for any
-    spaces that cannot be passed.
-    '''
+
     def __init__(self, filename):
+        '''
+        Initializes the board by reading the given file name. Also calls the method to parse the textfile.
+        '''
         board = open(filename, 'r')
         fileData = board.readlines()
         board.close()
         self.parseTextFile(fileData)
 
     def parseTextFile(self, fileData):
+        '''
+        Parses the textfile into a 2-dimensional list, containing nodes for each space in the board.
+        '''
         boardSize = fileData[0].replace("(","").replace(")","").rstrip().split(",")
         self.rows = int(boardSize[0])
         self.columns = int(boardSize[1])
@@ -53,17 +51,26 @@ class Board():
             self.nodes.append(x_list)
 
     def isUnwalkable(self, node):
+        '''
+        Given a node, returns a boolean saying whether or not the node is possible to access, or if it's an obstacle.
+        '''
         for elements in self.unWalkableAreas:
             if node.x >= elements[0] and node.y >= elements[1]:
                 if node.x <= elements[0] + (elements[2] - 1) and node.y <= elements[1] +(elements[3] - 1):                        return True
         return False
 
     def distanceToEndNode(self, node):
+        '''
+        Return the manhattan distance from the current node to the end node.
+        '''
         distance = math.fabs(node.x - self.endNode.x)
         distance += math.fabs(node.y - self.endNode.y)
         return int(distance) 
 
     def getNeighbours(self, node):
+        '''
+        Return the vertical and horizontal neighbours of the given node.
+        '''
         nodes = []
         if node.x < self.columns - 1: 
             nodes.append(Node(node.x + 1, node.y))
@@ -76,14 +83,21 @@ class Board():
         return nodes
 
 class GUI(tk.Frame):
-    
+    '''
+    Class responsible for drawing the user interface. Also contains rectangles.
+    '''
     def __init__(self, parent):
+        '''
+        Initializes tkInter, and creates the canvas, in which additional widgets are created.
+        '''
         tk.Frame.__init__(self, parent)
         self.parent = parent
         self.canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0, width=600, height=600)
-        self.controller = Controller(self)
 
     def build(self, board, size):
+        '''
+        Builds the GUI from a given board, and packing it in the end.
+        '''
         self.board = board
         self.size = size
 
@@ -112,31 +126,38 @@ class GUI(tk.Frame):
         self.canvas.pack()
 
     def drawRectangle(self, node, fill):
+        '''
+        Given a node, the method will draw a rectangle on the canvas corresponding to the x 
+        and y coordinates of the node.
+        '''
         x = node.x
-        y = board.columns - node.y
+        y = self.board.columns - node.y
 
         top = (y - 1) * self.size
         left = x * self.size
         bottom = top + self.size
         right = left + self.size
-        #print "draw at %s, %s, %s, %s" % (left, top, right, bottom)
         self.canvas.create_rectangle(left, top, right, bottom, fill = fill)
-        #self.canvas.pack()
-
 
     def drawPath(self, node, color):
-        print("-----------")
+        '''
+        Given a node, the method will draw the full path of all the nodes where this node 
+        came from, all the way back to the start node.
+        '''
         while node.predecessor:
             if node != self.board.startNode or node != self.board.endNode:
                 self.drawRectangle(node, color)
-                print(node)
                 node = node.predecessor
 
 
     def makeMenu(self):
+        '''
+        Creates the menu at the top of the user interface. It also defines the actions to be 
+        performed when the menu items are clicked.
+        '''
         menubar = tk.Menu(root)
         boardmenu = tk.Menu(menubar, tearoff=0)
-        boardmenu.add_command(label='Open file', command=openBoard)
+        boardmenu.add_command(label='Open file', command=self.controller.openBoard)
         menubar.add_cascade(label='Board', menu=boardmenu)
 
         typemenu = tk.Menu(menubar, tearoff=0)
@@ -149,26 +170,39 @@ class GUI(tk.Frame):
 
 
     def clear(self):
-        self.canvas.delete("all")     
+        '''
+        Clears the canvas, and deletes all the elements.
+        '''
+        self.canvas.delete("all") 
+
+    def initController(self):
+        '''
+        Initializes the controller used by the GUI.
+        '''
+        self.controller = Controller(self)    
 
 
 class Controller(object):
     """
-
+    Responsible for handling events triggered by the user interface.
     """
 
-    def __init__(self, gui=None):
-        """
-        Constructor
-        """
 
+    def __init__(self, gui):
+        """
+        Constructor, sets the instance of the user interface.
+        """
         self.gui = gui
-        self.flags = {'first_run': True}
 
+    
     def solve(self, alg='best-first'):
+        '''
+        Method triggered by selecting an algorithm from the user interface. 
+        It will trigger the method corresponding to the algorithm, or default 
+        to best first.
+        '''
         self.reset()
-        astar.clear()
-        self.gui.build(board, 16)
+        self.gui.build(self.board, 16)
         if alg == 'best-first':
             self.solveAstar()
         elif alg == 'bfs':
@@ -177,60 +211,73 @@ class Controller(object):
             self.solveDFS()
 
     def reset(self):
+        '''
+        Resets the gui and the instance of astar, allowing a new run to be started.
+        '''
         self.gui.clear()
-        astar.clear()
+        self.astar.clear()
 
     def solveAstar(self):
-        current = astar.solve('A*')
+        ''' 
+        Starts astar, and runs through in best-first mode
+        '''
+        current = self.astar.solve('A*')
         if current != False:
-            gui.drawPath(astar.prev_current, 'pink')
-            gui.drawPath(current, 'black')
-            root.after(50, self.solveAstar)
+            self.gui.drawPath(self.astar.prev_current, 'pink')
+            self.gui.drawPath(current, 'black')
+            root.after(refreshTime, self.solveAstar)
         else:
-            gui.drawPath(astar.prev_current, 'pink')
-            gui.drawPath(astar.current, 'black')
+            self.gui.drawPath(self.astar.prev_current, 'pink')
+            self.gui.drawPath(self.astar.current, 'black')
 
     def solveBFS(self):
-        current = astar.solve('BFS')
+        '''
+        Starts astar, and rund through in breadth-first mode
+        '''
+        current = self.astar.solve('BFS')
         if current != False:
-            gui.drawPath(astar.prev_current, 'pink')
-            gui.drawPath(current, 'black')
-            root.after(50, self.solveBFS)
+            self.gui.drawPath(self.astar.prev_current, 'pink')
+            self.gui.drawPath(current, 'black')
+            root.after(refreshTime, self.solveBFS)
         else:
-            gui.drawPath(astar.prev_current, 'pink')
-            gui.drawPath(astar.current, 'black')
+            self.gui.drawPath(self.astar.prev_current, 'pink')
+            self.gui.drawPath(self.astar.current, 'black')
 
     def solveDFS(self):
-        current = astar.solve('DFS')
+        '''
+        Starts astar, and runs through in Depth-first mode
+        '''
+        current = self.astar.solve('DFS')
         if current != False:
-            gui.drawPath(astar.prev_current, 'pink')
-            gui.drawPath(current, 'black')
-            root.after(50, self.solveDFS)
+            self.gui.drawPath(self.astar.prev_current, 'pink')
+            self.gui.drawPath(current, 'black')
+            root.after(refreshTime, self.solveDFS)
         else:
-            gui.drawPath(astar.prev_current, 'pink')
-            gui.drawPath(astar.current, 'black')
+            self.gui.drawPath(self.astar.prev_current, 'pink')
+            self.gui.drawPath(self.astar.current, 'black')
 
-def openBoard():
-    
-    global board
-    global astar
-    global gui
-
-    filename = askopenfilename(parent=root)
-    board = Board(filename)    
-    if gui == None:
-        gui = GUI(root)
-    if gui != None:
-        gui.clear()
-    gui.build(board, 16)
-    gui.pack(side="top", fill="both", expand="false")
-    
-    astar = Astar(board, gui)
+    def openBoard(self):
+        '''
+        Opens the file system, allowing you to select a board. It then builds a board based on whats selected.
+        '''
+        filename = askopenfilename(parent=root)
+        self.board = Board(filename)    
+        self.gui.clear()
+        self.gui.build(self.board, 16)
+        gui.pack(side="top", fill="both", expand="false")  
+        self.astar = Astar(self.board)
 
 if __name__ == "__main__":
-    global gui
+    '''
+    Initializes TkInter, and passes it to the gui, and initializes the gui's menu and controller. It also handles command line input.
+    '''
+    global refreshTime
+    refreshTime = 50
+    if (len(sys.argv) == 2 and int(sys.argv[1])):
+        refreshTime = sys.argv[1]
     root = tk.Tk()
     gui = GUI(root)
+    gui.initController()    
     gui.makeMenu()
     root.mainloop()
 

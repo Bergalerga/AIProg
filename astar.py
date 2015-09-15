@@ -2,8 +2,15 @@ from node import Node
 import heapq
 
 class Astar():
-    def __init__(self, board, gui):
-        self.gui = gui
+    '''
+    The main algorithm, responsible for solving the pathfinding problem
+    '''
+
+
+    def __init__(self, board):
+        '''
+        Initializes the required components used by the algorithm, and a board to work with.
+        '''
         self.board = board
         self.opened = []
         self.closed = []
@@ -13,12 +20,11 @@ class Astar():
         self.opened.append(self.current)
         self.prev_current = None
 
-    def setHValues(self):
-        return
-
     def solve(self, mode):
-
-        
+        '''
+        This is the agenda loop. It will return the next node chosen. Has a parameter mode, which
+        defines which algorithm to perform.
+        '''
         if mode == 'A*':
             heapq.heapify(self.opened)   
         
@@ -59,12 +65,18 @@ class Astar():
             return self.current
 
     def evaluate(self, child, predecessor):
+        '''
+        Evaluates and updates the g, h and f values for a given node, compared to another node.
+        '''
         child.predecessor = predecessor
         child.g = predecessor.g + 1
         child.h = self.board.distanceToEndNode(child)
         child.f = child.g + child.h
 
     def propagate(self, predecessor):
+        '''
+        Iteratively evaluates a node compared to its predecessor, all the way to the start node.
+        '''
         for child in predecessor.children:
             if (predecessor.g+1) < child.g:
                 child.predecessor = predecessor
@@ -74,6 +86,9 @@ class Astar():
                 propagate(child)
 
     def clear(self):
+        '''
+        Clears the values set by the algorithm, preparing it for a new run.
+        '''
         self.opened = []
         self.closed = []
         self.current = self.board.startNode
