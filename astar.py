@@ -11,6 +11,7 @@ class Astar():
         self.board.startNode.h = self.board.distanceToEndNode(self.board.startNode)
         self.board.startNode.f = self.board.startNode.g + self.board.startNode.h
         self.opened.append(self.current)
+        self.prev_current = None
 
     def setHValues(self):
         return
@@ -22,18 +23,16 @@ class Astar():
             heapq.heapify(self.opened)   
         
         if (len(self.opened)):
+            self.prev_current = self.current
             if mode == 'A*':
                 self.current = heapq.heappop(self.opened)
             elif mode =='DFS':
                 self.current = self.opened.pop(-1)
             else:
-                self.current = self.opened.pop(0)
-                            
+                self.current = self.opened.pop(0)            
             self.closed.append(self.current)
             if self.current == self.board.endNode:
-                self.clear()
-                self.current = False
-                return self.current
+                return False
             neighbours = self.board.getNeighbours(self.current)
             
             for neighbour in neighbours:
@@ -73,28 +72,6 @@ class Astar():
                 child.h = self.board.distanceToEndNode(child)
                 child.f = child.g + child.h
                 propagate(child)
-
-    def printPath(self, node):
-        path = list()
-        while True:
-            if node.predecessor != None:
-                path.append(node)
-                node = node.predecessor
-            else:
-                break
-        #print(path)
-
-    def drawPath(self, node, fill):
-
-        while True:
-            if node.predecessor:
-                self.gui.drawRectangle(node, fill)
-                node = node.predecessor
-            else:
-                break
-
-    def drawNode(self, node, fill):
-        self.gui.drawRectangle(node, fill)
 
     def clear(self):
         self.opened = []

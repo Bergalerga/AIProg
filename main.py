@@ -81,6 +81,7 @@ class GUI(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.parent = parent
         self.canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0, width=600, height=600)
+        self.controller = Controller(self)
 
     def build(self, board, size):
         self.board = board
@@ -120,57 +121,35 @@ class GUI(tk.Frame):
         right = left + self.size
         #print "draw at %s, %s, %s, %s" % (left, top, right, bottom)
         self.canvas.create_rectangle(left, top, right, bottom, fill = fill)
-        self.canvas.pack()
+        #self.canvas.pack()
 
 
-    def drawPath(self, node):
-        if node != self.board.startNode or node != self.board.endNode:
-            self.drawRectangle(node, 'black')
+    def drawPath(self, node, color):
+        print("-----------")
+        while node.predecessor:
+            if node != self.board.startNode or node != self.board.endNode:
+                self.drawRectangle(node, color)
+                print(node)
+                node = node.predecessor
+
+
+    def makeMenu(self):
+        menubar = tk.Menu(root)
+        boardmenu = tk.Menu(menubar, tearoff=0)
+        boardmenu.add_command(label='Open file', command=openBoard)
+        menubar.add_cascade(label='Board', menu=boardmenu)
+
+        typemenu = tk.Menu(menubar, tearoff=0)
+        typemenu.add_command(label='BFS', command=lambda alg='bfs': self.controller.solve(alg))
+        typemenu.add_command(label='DFS', command=lambda alg='dfs': self.controller.solve(alg))
+        typemenu.add_command(label='Best first', command=lambda alg='best-first': self.controller.solve(alg))
+        menubar.add_cascade(label='Type', menu=typemenu)
+
+        root.config(menu=menubar)
+
 
     def clear(self):
-        self.canvas.delete("all")        
-
-def solveAstar():
-    current = astar.solve('A*')
-    if current != False:
-        gui.drawPath(current)
-        gui.canvas.pack()
-        root.after(100, solveAstar)
-    else:
-        print("done")
-
-def solveBFS():
-    current = astar.solve('BFS')
-    if current != False:
-        gui.drawPath(current)
-        gui.canvas.pack()
-        root.after(100, solveBFS)
-    else:
-        print("done")
-
-def solveDFS():
-    current = astar.solve('DFS')
-    if current != False:
-        gui.drawPath(current)
-        gui.canvas.pack()
-        root.after(100, solveDFS)
-    else:
-        print("done")
-
-def openBoard():
-    filename = askopenfilename(parent=root)
-    global board
-    board = Board(filename)
-    global gui
-    if gui == None:
-        gui = GUI(root)
-    if gui != None:
-        gui.clear()
-
-    gui.build(board, 16)
-    gui.pack(side="top", fill="both", expand="false")
-    global astar
-    astar = Astar(board, gui)
+        self.canvas.delete("all")     
 
 
 class Controller(object):
@@ -188,38 +167,71 @@ class Controller(object):
 
     def solve(self, alg='best-first'):
         self.reset()
+        astar.clear()
         self.gui.build(board, 16)
         if alg == 'best-first':
-            solveAstar()
+            self.solveAstar()
         elif alg == 'bfs':
-            solveBFS()
+            self.solveBFS()
         else: 
-            solveDFS()
+            self.solveDFS()
 
     def reset(self):
         self.gui.clear()
-        # clear board
+        astar.clear()
 
-def makeMenu(root, controller):
-        menubar = tk.Menu(root)
-        boardmenu = tk.Menu(menubar, tearoff=0)
-        boardmenu.add_command(label='Open file', command=openBoard)
-        menubar.add_cascade(label='Board', menu=boardmenu)
+    def solveAstar(self):
+        current = astar.solve('A*')
+        if current != False:
+            gui.drawPath(astar.prev_current, 'pink')
+            gui.drawPath(current, 'black')
+            root.after(50, self.solveAstar)
+        else:
+            gui.drawPath(astar.prev_current, 'pink')
+            gui.drawPath(astar.current, 'black')
 
-        typemenu = tk.Menu(menubar, tearoff=0)
-        typemenu.add_command(label='BFS', command=lambda alg='bfs': controller.solve(alg))
-        typemenu.add_command(label='DFS', command=lambda alg='dfs': controller.solve(alg))
-        typemenu.add_command(label='Best first', command=lambda alg='best-first': controller.solve(alg))
-        menubar.add_cascade(label='Type', menu=typemenu)
+    def solveBFS(self):
+        current = astar.solve('BFS')
+        if current != False:
+            gui.drawPath(astar.prev_current, 'pink')
+            gui.drawPath(current, 'black')
+            root.after(50, self.solveBFS)
+        else:
+            gui.drawPath(astar.prev_current, 'pink')
+            gui.drawPath(astar.current, 'black')
 
-        root.config(menu=menubar)
+    def solveDFS(self):
+        current = astar.solve('DFS')
+        if current != False:
+            gui.drawPath(astar.prev_current, 'pink')
+            gui.drawPath(current, 'black')
+            root.after(50, self.solveDFS)
+        else:
+            gui.drawPath(astar.prev_current, 'pink')
+            gui.drawPath(astar.current, 'black')
+
+def openBoard():
+    
+    global board
+    global astar
+    global gui
+
+    filename = askopenfilename(parent=root)
+    board = Board(filename)    
+    if gui == None:
+        gui = GUI(root)
+    if gui != None:
+        gui.clear()
+    gui.build(board, 16)
+    gui.pack(side="top", fill="both", expand="false")
+    
+    astar = Astar(board, gui)
 
 if __name__ == "__main__":
     global gui
     root = tk.Tk()
     gui = GUI(root)
-    controller = Controller(gui=gui)
-    makeMenu(root, controller)
+    gui.makeMenu()
     root.mainloop()
 
 
