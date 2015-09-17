@@ -44,11 +44,12 @@ class Board():
             self.unWalkableAreas.append(area)
         
         self.nodes = list()
-        for y in range(self.columns):
-            x_list = list()
-            for x in range(self.rows):
-                x_list.append(Node(x, y))
-            self.nodes.append(x_list)
+        for x in range(self.rows):
+            y_list = list()
+            for y in range(self.columns):
+                y_list.append(Node(x, y))
+            self.nodes.append(y_list)
+
 
     def isUnwalkable(self, node):
         '''
@@ -71,15 +72,15 @@ class Board():
         '''
         Return the vertical and horizontal neighbours of the given node.
         '''
-        nodes = []
-        if node.x < self.columns - 1: 
-            nodes.append(Node(node.x + 1, node.y))
-        if node.y > 0:
-            nodes.append(Node(node.x, node.y - 1))
+        nodes = list()
+        if node.x < self.rows - 1:
+            nodes.append(self.nodes[node.x + 1][node.y])
+        if node.y < self.columns - 1:
+            nodes.append(self.nodes[node.x][node.y + 1])
         if node.x > 0:
-            nodes.append(Node(node.x - 1, node.y))
-        if node.y < self.rows - 1:
-            nodes.append(Node(node.x, node.y + 1))
+            nodes.append(self.nodes[node.x - 1][node.y])
+        if node.y > 0:
+            nodes.append(self.nodes[node.x][node.y - 1])
         return nodes
 
 class GUI(tk.Frame):
