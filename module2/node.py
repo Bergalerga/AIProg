@@ -12,6 +12,7 @@ class Node():
 		self.cartesian_x = cartesian_x
 		self.cartesian_y = cartesian_y
 		self.edges = list()
+		self.domain = []
 
 	def __str__(self):
 		return str(self.index) + " - " + str(self.cartesian_x) + " - " + str(self.cartesian_y)
