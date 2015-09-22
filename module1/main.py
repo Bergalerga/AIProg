@@ -83,6 +83,9 @@ class Board():
             nodes.append(self.nodes[node.x][node.y - 1])
         return nodes
 
+    def getArcCost(self, node):
+        return 1
+
 class GUI(tk.Frame):
     '''
     Class responsible for drawing the user interface. Also contains rectangles.

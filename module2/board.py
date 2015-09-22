@@ -49,10 +49,19 @@ class Board():
 		'''
 		self.nodes = list()
 		for vertex in self.vertexes:
-			self.nodes.append(Node(int(vertex[0]), vertex[1], vertex[2]))
+			self.nodes.append(Node(int(vertex[0]), vertex[1], vertex[2], 4))
 		for edge in self.edges:
 			self.nodes[edge[0]].edges.append(self.nodes[edge[1]])
 			self.nodes[edge[1]].edges.append(self.nodes[edge[0]])
+
+	def distanceToEndNode(self, node=None):
+		'''
+		return len(node.domain)
+		'''
+		h = 0
+		for node in self.nodes:
+			h += len(node.domain)
+		return h
 
 
 if __name__ == "__main__":

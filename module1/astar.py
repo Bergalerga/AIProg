@@ -47,7 +47,7 @@ class Astar():
                 if self.board.isUnwalkable(neighbour):
                     continue
 
-                temporary_g = self.current.g + 1
+                temporary_g = self.current.g + self.board.getArcCost(neighbour)
 
                 if neighbour not in self.opened and neighbour not in self.closed:
 
