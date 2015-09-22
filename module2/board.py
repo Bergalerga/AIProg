@@ -54,6 +54,8 @@ class Board():
 			self.nodes[edge[0]].edges.append(self.nodes[edge[1]])
 			self.nodes[edge[1]].edges.append(self.nodes[edge[0]])
 
+		self.startNode = self.nodes[0]
+
 	def distanceToEndNode(self, node=None):
 		'''
 		return len(node.domain)
@@ -63,6 +65,14 @@ class Board():
 			h += len(node.domain)
 		return h
 
+	def getNeighbours(self, node):
+		return node.edges
+
+	def getArcCost(self, node):
+		return 1
+
+	def isSolution(self, node):
+		pass
 
 if __name__ == "__main__":
 	board = Board("1.txt")

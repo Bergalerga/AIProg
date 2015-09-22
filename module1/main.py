@@ -86,6 +86,11 @@ class Board():
     def getArcCost(self, node):
         return 1
 
+    def isSolution(self, node):
+        if node == self.endNode:
+            return True
+        return False
+
 class GUI(tk.Frame):
     '''
     Class responsible for drawing the user interface. Also contains rectangles.
