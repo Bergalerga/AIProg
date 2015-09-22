@@ -7,16 +7,22 @@ class Astar():
     '''
 
 
-    def __init__(self, board):
+    def __init__(self, nodes):
         '''
         Initializes the required components used by the algorithm, and a board to work with.
         '''
-        self.board = board
+        self.nodes = nodes
         self.opened = []
         self.closed = []
-        self.current = self.board.startNode
-        self.board.startNode.h = self.board.distanceToEndNode(self.board.startNode)
-        self.board.startNode.f = self.board.startNode.g + self.board.startNode.h
+        for nodes in self.nodes:
+            for node in nodes:
+                if node.startnode == True:
+                    self.startnode = node
+                    self.current = self.startnode
+                elif node.endnode:
+                    self.endnode = node
+        self.startnode.h = self.startnode.distance_to_node(self.endnode)
+        self.startnode.f = self.startnode.g + self.startnode.h
         self.opened.append(self.current)
         self.prev_current = None
 
@@ -37,17 +43,17 @@ class Astar():
             else:
                 self.current = self.opened.pop(0)            
             self.closed.append(self.current)
-            if self.board.isSoulution():
+            if self.current.isSolution():
                 return False
-            neighbours = self.board.getNeighbours(self.current)
+            neighbours = self.getNeighbours(self.current)
             
             for neighbour in neighbours:
                 self.current.children.append(neighbour)
 
-                if self.board.isUnwalkable(neighbour):
+                if neighbour.unwalkable:
                     continue
 
-                temporary_g = self.current.g + self.board.getArcCost(neighbour)
+                temporary_g = self.current.g + self.current.get_arc_cost(neighbour)
 
                 if neighbour not in self.opened and neighbour not in self.closed:
 
@@ -56,12 +62,10 @@ class Astar():
                         heapq.heappush(self.opened, neighbour)
                     else:
                         self.opened.append(neighbour)
-                    #self.drawNode(neighbour, 'violet')
                 elif temporary_g < neighbour.g:
                     self.evaluate(neighbour, self.current)
                     if neighbour in self.closed:
                        self.propagate(neighbour)
-            #print [self.opened[x] for x in range(len(self.opened))]
             return self.current
 
     def evaluate(self, child, predecessor):
@@ -70,7 +74,7 @@ class Astar():
         '''
         child.predecessor = predecessor
         child.g = predecessor.g + 1
-        child.h = self.board.distanceToEndNode(child)
+        child.h = child.distance_to_node(self.endnode)
         child.f = child.g + child.h
 
     def propagate(self, predecessor):
@@ -81,9 +85,24 @@ class Astar():
             if (predecessor.g+1) < child.g:
                 child.predecessor = predecessor
                 child.g = predecessor.g +1
-                child.h = self.board.distanceToEndNode(child)
+                child.h = child.distance_to_node(self.endnode)
                 child.f = child.g + child.h
                 self.propagate(child)
+
+    def getNeighbours(self, node):
+        '''
+        Return the vertical and horizontal neighbours of the given node.
+        '''
+        nodes = list()
+        if node.x < len(self.nodes) - 1:
+            nodes.append(self.nodes[node.x + 1][node.y])
+        if node.y < len(self.nodes[0]) - 1:
+            nodes.append(self.nodes[node.x][node.y + 1])
+        if node.x > 0:
+            nodes.append(self.nodes[node.x - 1][node.y])
+        if node.y > 0:
+            nodes.append(self.nodes[node.x][node.y - 1])
+        return nodes
 
     def clear(self):
         '''
@@ -91,18 +110,13 @@ class Astar():
         '''
         self.opened = []
         self.closed = []
-        self.current = self.board.startNode
-        self.board.startNode.h = self.board.distanceToEndNode(self.board.startNode)
-        self.board.startNode.f = self.board.startNode.g + self.board.startNode.h
+        for nodes in self.nodes:
+            for node in nodes:
+                if node.startnode == True:
+                    self.startnode = node
+                    self.current = self.startnode
+                elif node.endnode:
+                    self.endnode = node
+        self.startnode.h = self.startnode.distance_to_node(self.endnode)
+        self.startnode.f = self.startnode.g + self.startnode.h
         self.opened.append(self.current)
-
-
-
-
-
-
-            
-
-
-
-        

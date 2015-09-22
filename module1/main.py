@@ -7,7 +7,6 @@ from node import Node
 import heapq
 import sys
 import re
-import math
 
 
 class Board():
@@ -34,20 +33,29 @@ class Board():
         self.columns = int(boardSize[1])
 
         startAndStop = re.findall(r'[^,;\s]+', fileData[1].replace("(", "").replace(")", ""))
-        self.startNode = Node(int(startAndStop[0]), int(startAndStop[1]))
-        self.endNode = Node(int(startAndStop[2]), int(startAndStop[3]))
+        self.startnode = Node(int(startAndStop[0]), int(startAndStop[1]))
+        self.endnode = Node(int(startAndStop[2]), int(startAndStop[3]))
 
-        self.unWalkableAreas = []
+        unWalkableAreas = []
         for elements in fileData[2:]:
             unWalkable = elements.replace("(","").replace(")","").rstrip().split(",")
             area = [int(x) for x in unWalkable]
-            self.unWalkableAreas.append(area)
+            unWalkableAreas.append(area)
         
         self.nodes = list()
         for x in range(self.rows):
             y_list = list()
             for y in range(self.columns):
-                y_list.append(Node(x, y))
+                if x == int(startAndStop[0]) and y == int(startAndStop[1]):
+                    y_list.append(Node(x, y, startnode=True))
+                elif x == int(startAndStop[2]) and y == int(startAndStop[3]):
+                    y_list.append(Node(x, y, endnode=True))
+                else:
+                    y_list.append(Node(x, y))
+                for elements in unWalkableAreas:
+                    if x >= elements[0] and y >= elements[1]:
+                        if x <= elements[0] + (elements[2] - 1) and y <= elements[1] +(elements[3] - 1):
+                            y_list[y].unwalkable=True
             self.nodes.append(y_list)
 
 
@@ -64,24 +72,6 @@ class Board():
         '''
         Return the manhattan distance from the current node to the end node.
         '''
-        distance = math.fabs(node.x - self.endNode.x)
-        distance += math.fabs(node.y - self.endNode.y)
-        return int(distance) 
-
-    def getNeighbours(self, node):
-        '''
-        Return the vertical and horizontal neighbours of the given node.
-        '''
-        nodes = list()
-        if node.x < self.rows - 1:
-            nodes.append(self.nodes[node.x + 1][node.y])
-        if node.y < self.columns - 1:
-            nodes.append(self.nodes[node.x][node.y + 1])
-        if node.x > 0:
-            nodes.append(self.nodes[node.x - 1][node.y])
-        if node.y > 0:
-            nodes.append(self.nodes[node.x][node.y - 1])
-        return nodes
 
     def getArcCost(self, node):
         return 1
@@ -112,20 +102,19 @@ class GUI(tk.Frame):
 
         self.frame = tk.Frame(self, None)
         self.frame.grid(column=0, row=0)
-        
-            
+
         for width in reversed(range(board.rows)):
-            for height in (range(board.columns)):
+            for height in range(board.columns):
                 top = (board.columns - height - 1) * size
                 left = width * size
                 bottom = top + size
                 right = left + size
 
-                if (board.startNode.x == width and board.startNode.y == height):
+                if (board.nodes[width][height].startnode):
                     fill = 'green'
-                elif (board.endNode.x == width and board.endNode.y == height):
+                elif (board.nodes[width][height].endnode):
                     fill = 'grey'
-                elif (board.isUnwalkable(Node(width, height))):
+                elif (board.nodes[width][height].unwalkable):
                     fill = 'red'
                 else: 
                     fill = 'white'
@@ -154,7 +143,7 @@ class GUI(tk.Frame):
         came from, all the way back to the start node.
         '''
         while node.predecessor:
-            if node != self.board.startNode or node != self.board.endNode:
+            if node != self.board.startnode or node != self.board.endnode:
                 self.drawRectangle(node, color)
                 node = node.predecessor
 
@@ -274,7 +263,7 @@ class Controller(object):
         self.gui.clear()
         self.gui.build(self.board, 16)
         gui.pack(side="top", fill="both", expand="false")  
-        self.astar = Astar(self.board)
+        self.astar = Astar(self.board.nodes)
 
 if __name__ == "__main__":
     '''
@@ -289,5 +278,3 @@ if __name__ == "__main__":
     gui.initController()    
     gui.makeMenu()
     root.mainloop()
-
-

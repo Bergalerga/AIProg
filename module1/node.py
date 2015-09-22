@@ -1,10 +1,12 @@
+import math
+
 class Node():
     '''
     Nodes held by the board, used to represent a square on the board.
     '''
 
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, unwalkable = False, startnode = False, endnode = False):
         '''
         Initializes the Node object, setting the given coordinates, and sets h, g and f values to 0.
         It also initializes the predecessor of the node, and a list of children.
@@ -16,7 +18,20 @@ class Node():
         self.f = 0
         self.predecessor = None
         self.children = []
+        self.unwalkable = unwalkable
+        self.startnode = startnode
+        self.endnode = endnode
 
+    def get_arc_cost(self, other):
+        return 1
+
+    def distance_to_node(self, other):
+        distance = math.fabs(self.x - other.x)
+        distance += math.fabs(self.y - other.y)
+        return int(distance) 
+
+    def isSolution(self):
+        return self.endnode
     
     def __lt__(self, other):
         '''
@@ -44,5 +59,5 @@ class Node():
         '''
         Allows you to print node object in a collection. 
         '''
-    	return "X: " + str(self.x) + " Y: " + str(self.y)
+    	return "X: " + str(self.x) + " Y: " + str(self.y) + str([self.unwalkable, self.startnode, self.endnode])
     
