@@ -12,8 +12,11 @@ class GAC():
 
     def solve(self):
         self.initialize()
-        #if not solution:(tomt domene paa en node)
-        #    astar search
+        for node in self.board.nodes:
+            if len(node.domain == 0):
+                return False
+            if len(node.domain > 1):
+                self.search()
 
 
     def initialize(self):
@@ -26,6 +29,7 @@ class GAC():
 
     def domain_filtering(self, revise_queue):
         while revise_queue:
+            print(revise_queue)
             revise_pair = self.revise_queue.pop(0)
             domain_reduced = self.revise(revise_pair)
             if domain_reduced:
@@ -40,6 +44,8 @@ class GAC():
                 revise_pair[0].domain.remove(edge.domain[0])
                 return True
         return False
+
+    def search(self):
 
 '''
     def rerun():
