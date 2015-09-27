@@ -25,13 +25,14 @@ class CSPState():
 	def get_neighbours(self):
 		for variable in self.variables:
 			for color in self.domains[variable]:
+				print 'h'
 				neighbour_state = copy.deepcopy(self)
-				neighbour_state.domains[variable] = color
+				neighbour_state.domains[variable] = [color]
 				self.neighbours.append(neighbour_state)
 		return self.neighbours
 
 	#Returns arc_cost, in this case it is always 1
-	def get_arc_cost(self, node):
+	def get_arc_cost(self):
 		return 1
 
 	#Returns the heurestic distance to a solution, based on how large remaining domains are
@@ -43,7 +44,7 @@ class CSPState():
 
 	def is_illegal(self):
 		for edge in self.constraints:
-			if len(self.domain[edge[0]]) == 1 and len(self.domain[edge[1]]) == 1 and self.domain[edge[0]][0] == self.domain[edge[1]][0]:
+			if len(self.domains[edge[0]]) == 1 and len(self.domains[edge[1]]) == 1 and (self.domains[edge[0]]) == (self.domains[edge[1]]):
 				return True
 		return False
 

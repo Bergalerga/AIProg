@@ -13,20 +13,17 @@ class gacAstar():
 		board.parse_text_file()
 		domains = self.make_domain_dict(board.indexes, 3)
 		constraints = self.make_constraint_dict(board.edges)
-		csp_state = CSPState(board.indexes, domains, constraints)
+		csp_state = CSPState(board.indexes, domains, board.edges)
 		gac = GAC(csp_state)
 		gac.initialize()
 		new_state = gac.domain_filtering_loop()
-		print new_state
 		astar = Astar(new_state)
 		while not new_state.is_solution():
 			new_state = astar.solve('A*')
-			print new_state
 			gac = GAC(new_state)
 			gac.initialize()
 			new_state = gac.domain_filtering_loop()
 			
-		print new_state
 
 
 	def make_domain_dict(self, variables, K):

@@ -34,11 +34,13 @@ class Astar():
             elif mode =='DFS':
                 self.current = self.opened.pop(-1)
             else:
-                self.current = self.opened.pop(0)            
+                self.current = self.opened.pop(0)
             self.closed.append(self.current)
             if self.current.is_solution():
                 return self.statistics()
+            print 'solutinhelvett'
             for neighbour in self.current.get_neighbours():
+                print "fjas"
                 if neighbour.is_illegal():
                     continue
 
