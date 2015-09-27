@@ -1,3 +1,5 @@
+from GUI import GUI
+
 class Board():
 	'''
 	self.numberOfVertices = the number of vertices in the graph
@@ -38,15 +40,6 @@ class Board():
 				break
 			self.edges.append([int(x) for x in edge])
 			file_index += 1
-		'''
-		print(self.number_of_vertices)
-		print(self.number_of_edges)
-		print(self.vertexes)
-		print(self.edges)
-		'''
-		self.variables = list()
+		self.indexes = list()
 		for vertex in self.vertexes:
-			self.variables.append(Node(int(vertex[0]), vertex[1], vertex[2], 4))
-		for edge in self.edges:
-			self.variables[edge[0]].edges.append(self.variables[edge[1]])
-			self.variables[edge[1]].edges.append(self.variables[edge[0]])
+			self.indexes.append(int(vertex[0]))
