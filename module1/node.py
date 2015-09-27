@@ -17,7 +17,7 @@ class Node():
         self.g = 0
         self.f = 0
         self.predecessor = None
-        self.children = []
+        self.neighbours = []
         self.unwalkable = unwalkable
         self.startnode = startnode
         self.endnode = endnode
@@ -25,12 +25,18 @@ class Node():
     def get_arc_cost(self, other):
         return 1
 
+    def get_neighbours(self):
+        return self.neighbours
+
+    def get_h(self):
+        return self.h
+
     def distance_to_node(self, other):
         distance = math.fabs(self.x - other.x)
         distance += math.fabs(self.y - other.y)
         return int(distance) 
 
-    def isSolution(self):
+    def is_solution(self):
         return self.endnode
     
     def __lt__(self, other):

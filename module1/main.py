@@ -7,6 +7,7 @@ from node import Node
 import heapq
 import sys
 import re
+import math
 
 
 class Board():
@@ -33,8 +34,8 @@ class Board():
         self.columns = int(boardSize[1])
 
         startAndStop = re.findall(r'[^,;\s]+', fileData[1].replace("(", "").replace(")", ""))
-        self.startnode = Node(int(startAndStop[0]), int(startAndStop[1]))
-        self.endnode = Node(int(startAndStop[2]), int(startAndStop[3]))
+        #self.startnode = Node(int(startAndStop[0]), int(startAndStop[1]))
+        #self.endnode = Node(int(startAndStop[2]), int(startAndStop[3]))
 
         unWalkableAreas = []
         for elements in fileData[2:]:
@@ -46,18 +47,39 @@ class Board():
         for x in range(self.rows):
             y_list = list()
             for y in range(self.columns):
+
                 if x == int(startAndStop[0]) and y == int(startAndStop[1]):
-                    y_list.append(Node(x, y, startnode=True))
+                    self.startnode = Node(x, y, startnode=True)
+                    y_list.append(self.startnode)
                 elif x == int(startAndStop[2]) and y == int(startAndStop[3]):
-                    y_list.append(Node(x, y, endnode=True))
+                    self.endnode = Node(x, y, endnode=True)
+                    y_list.append(self.endnode)
                 else:
                     y_list.append(Node(x, y))
                 for elements in unWalkableAreas:
                     if x >= elements[0] and y >= elements[1]:
                         if x <= elements[0] + (elements[2] - 1) and y <= elements[1] +(elements[3] - 1):
                             y_list[y].unwalkable=True
+
             self.nodes.append(y_list)
 
+        for nodes in self.nodes:
+            for node in nodes:
+                #Sets h value for the node.
+                distance = math.fabs(node.x - self.endnode.x)
+                distance += math.fabs(node.y - self.endnode.y)
+                node.h = distance
+                #Generates the neighours of the node.
+                neighbours = list()
+                if node.x < self.rows - 1:
+                    neighbours.append(self.nodes[node.x + 1][node.y])
+                if node.y < self.columns - 1:
+                    neighbours.append(self.nodes[node.x][node.y + 1])
+                if node.x > 0:
+                    neighbours.append(self.nodes[node.x - 1][node.y])
+                if node.y > 0:
+                    neighbours.append(self.nodes[node.x][node.y - 1])
+                node.neighbours = neighbours
 
     def isUnwalkable(self, node):
         '''
@@ -220,39 +242,43 @@ class Controller(object):
         Starts astar, and runs through in best-first mode
         '''
         current = self.astar.solve('A*')
-        if current != False:
+        if isinstance(current, Node):
             self.gui.drawPath(self.astar.prev_current, 'pink')
             self.gui.drawPath(current, 'black')
             root.after(refreshTime, self.solveAstar)
         else:
             self.gui.drawPath(self.astar.prev_current, 'pink')
             self.gui.drawPath(self.astar.current, 'black')
+            print(current)
+
 
     def solveBFS(self):
         '''
         Starts astar, and rund through in breadth-first mode
         '''
         current = self.astar.solve('BFS')
-        if current != False:
+        if isinstance(current, Node):
             self.gui.drawPath(self.astar.prev_current, 'pink')
             self.gui.drawPath(current, 'black')
             root.after(refreshTime, self.solveBFS)
         else:
             self.gui.drawPath(self.astar.prev_current, 'pink')
             self.gui.drawPath(self.astar.current, 'black')
+            print(current)
 
     def solveDFS(self):
         '''
         Starts astar, and runs through in Depth-first mode
         '''
         current = self.astar.solve('DFS')
-        if current != False:
+        if isinstance(current, Node):
             self.gui.drawPath(self.astar.prev_current, 'pink')
             self.gui.drawPath(current, 'black')
             root.after(refreshTime, self.solveDFS)
         else:
             self.gui.drawPath(self.astar.prev_current, 'pink')
             self.gui.drawPath(self.astar.current, 'black')
+            print(current)
 
     def openBoard(self):
         '''
@@ -263,7 +289,7 @@ class Controller(object):
         self.gui.clear()
         self.gui.build(self.board, 16)
         gui.pack(side="top", fill="both", expand="false")  
-        self.astar = Astar(self.board.nodes)
+        self.astar = Astar(self.board.startnode)
 
 if __name__ == "__main__":
     '''

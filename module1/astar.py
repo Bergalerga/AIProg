@@ -7,22 +7,15 @@ class Astar():
     '''
 
 
-    def __init__(self, nodes):
+    def __init__(self, node):
         '''
         Initializes the required components used by the algorithm, and a board to work with.
         '''
-        self.nodes = nodes
+        self.startnode = node
+        self.current = node
         self.opened = []
         self.closed = []
-        for nodes in self.nodes:
-            for node in nodes:
-                if node.startnode == True:
-                    self.startnode = node
-                    self.current = self.startnode
-                elif node.endnode:
-                    self.endnode = node
-        self.startnode.h = self.startnode.distance_to_node(self.endnode)
-        self.startnode.f = self.startnode.g + self.startnode.h
+        self.current.f = self.current.g + self.current.h
         self.opened.append(self.current)
         self.prev_current = None
 
@@ -43,13 +36,9 @@ class Astar():
             else:
                 self.current = self.opened.pop(0)            
             self.closed.append(self.current)
-            if self.current.isSolution():
-                return False
-            neighbours = self.getNeighbours(self.current)
-            
-            for neighbour in neighbours:
-                self.current.children.append(neighbour)
-
+            if self.current.is_solution():
+                return self.statistics()
+            for neighbour in self.current.get_neighbours():
                 if neighbour.unwalkable:
                     continue
 
@@ -73,50 +62,36 @@ class Astar():
         Evaluates and updates the g, h and f values for a given node, compared to another node.
         '''
         child.predecessor = predecessor
-        child.g = predecessor.g + 1
-        child.h = child.distance_to_node(self.endnode)
+        child.g = predecessor.g + child.get_arc_cost()
         child.f = child.g + child.h
 
     def propagate(self, predecessor):
         '''
         Iteratively evaluates a node compared to its predecessor, all the way to the start node.
         '''
-        for child in predecessor.children:
+        for child in predecessor.neighbours:
             if (predecessor.g+1) < child.g:
                 child.predecessor = predecessor
-                child.g = predecessor.g +1
-                child.h = child.distance_to_node(self.endnode)
+                child.g = predecessor.g + child.get_arc_cost()
                 child.f = child.g + child.h
                 self.propagate(child)
-
-    def getNeighbours(self, node):
-        '''
-        Return the vertical and horizontal neighbours of the given node.
-        '''
-        nodes = list()
-        if node.x < len(self.nodes) - 1:
-            nodes.append(self.nodes[node.x + 1][node.y])
-        if node.y < len(self.nodes[0]) - 1:
-            nodes.append(self.nodes[node.x][node.y + 1])
-        if node.x > 0:
-            nodes.append(self.nodes[node.x - 1][node.y])
-        if node.y > 0:
-            nodes.append(self.nodes[node.x][node.y - 1])
-        return nodes
 
     def clear(self):
         '''
         Clears the values set by the algorithm, preparing it for a new run.
         '''
+        self.current = self.startnode
         self.opened = []
         self.closed = []
-        for nodes in self.nodes:
-            for node in nodes:
-                if node.startnode == True:
-                    self.startnode = node
-                    self.current = self.startnode
-                elif node.endnode:
-                    self.endnode = node
-        self.startnode.h = self.startnode.distance_to_node(self.endnode)
-        self.startnode.f = self.startnode.g + self.startnode.h
+        self.current.h = self.current.h
+        self.current.f = self.current.g + self.current.h
         self.opened.append(self.current)
+
+    def statistics(self):
+        count = 0
+        node = self.current
+        while node.predecessor:
+            count += 1
+            node = node.predecessor
+        return "Nodes generated: " + str(len(self.opened) + len(self.closed)) + " | Solution length: " + str(count)
+
