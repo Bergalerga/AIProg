@@ -1,11 +1,11 @@
 import copy
 
 class CSPState():
-	def __init__(self):
+	def __init__(self, variables, domains, constraints):
 		#GAC relevant info
-		self.variables = []
-		self.domains = {}
-		self.constraints = {}
+		self.variables = variables
+		self.domains = domains
+		self.constraints = constraints
 
 		#A* relevant info
 		self.h = 0
@@ -13,11 +13,6 @@ class CSPState():
 		self.g = 0
 		self.predecessor = None
 		self.neighbours = []
-
-	def initialize(self, variables, domains, constraints):
-		self.variables = variables
-		self.domains = domains
-		self.constraints = constraints
 
 	#If all variables have been set, it is a solution and returns True
 	def is_solution(self):
@@ -47,10 +42,10 @@ class CSPState():
 		return h
 
 	def __lt__(self, other):
-        '''
-        Method to compare two node object with respect to the f and h values. Used to sort the heap queue
-        in the Astar algorithm.
-        '''
-        if self.f == other.f:
-            return self.h < other.h
-        return self.f < other.f
+		'''
+		Method to compare two node object with respect to the f and h values. Used to sort the heap queue
+		in the Astar algorithm.
+		'''
+		if self.f == other.f:
+			return self.h < other.h
+		return self.f < other.f
