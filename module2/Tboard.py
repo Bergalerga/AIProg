@@ -12,11 +12,10 @@ class Board():
 	self.variables = list of variable objects containing the edges.
 	'''
 
-	def __init__(self, file, K):
+	def __init__(self, file):
 		file = open(file, 'r')
 		self.file_data = file.readlines()
 		file.close()
-		self.K = K
 
 	def parse_text_file(self):
 		'''

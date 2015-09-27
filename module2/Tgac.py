@@ -1,7 +1,7 @@
 class GAC():
 	def __init__(self, CSP):
-		state = CSP
-		revise_queue = []
+		self.state = CSP
+		self.revise_queue = []
 
 
 	def initialize(self):
@@ -17,13 +17,13 @@ class GAC():
 				for constraint in self.state.constraints[variable]:
 					if len(self.state.domain[constraint]) != 1:
 						self.revise_queue.append((constraint, self.state.constraints[constraint]))
-		return state
+		return self.state
 
 	def revise(self, revise_pair):
 		for neighbour_node in revise_pair[1]:
-			if len(self.state.domain[neighbour_node]) == 1:
-				if (self.state.domain[neighbour_node][0] in self.state.domain[revise_pair[0]]):
-					self.state.domain[revise_pair[0]].remove(self.state.domain[neighbour_node][0])
+			if len(self.state.domains[neighbour_node]) == 1:
+				if (self.state.domains[neighbour_node][0] in self.state.domains[revise_pair[0]]):
+					self.state.domains[revise_pair[0]].remove(self.state.domains[neighbour_node][0])
 					return True
 		return False
 

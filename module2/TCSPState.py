@@ -17,7 +17,7 @@ class CSPState():
 	#If all variables have been set, it is a solution and returns True
 	def is_solution(self):
 		for domain in self.domains:
-			if len(domain) != 1:
+			if len(self.domains[domain]) != 1:
 				return False
 		return True
 
@@ -40,6 +40,12 @@ class CSPState():
 		for domain in self.domains:
 			h += (len(domain)-1)
 		return h
+
+	def is_illegal(self):
+		for edge in self.constraints:
+			if len(self.domain[edge[0]]) == 1 and len(self.domain[edge[1]]) == 1 and self.domain[edge[0]][0] == self.domain[edge[1]][0]:
+				return True
+		return False
 
 	def __lt__(self, other):
 		'''
