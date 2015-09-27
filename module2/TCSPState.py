@@ -25,7 +25,6 @@ class CSPState():
 	def get_neighbours(self):
 		for variable in self.variables:
 			for color in self.domains[variable]:
-				print 'h'
 				neighbour_state = copy.deepcopy(self)
 				neighbour_state.domains[variable] = [color]
 				self.neighbours.append(neighbour_state)
@@ -43,9 +42,10 @@ class CSPState():
 		return h
 
 	def is_illegal(self):
-		for edge in self.constraints:
-			if len(self.domains[edge[0]]) == 1 and len(self.domains[edge[1]]) == 1 and (self.domains[edge[0]]) == (self.domains[edge[1]]):
-				return True
+		for key in self.constraints:
+			for value in self.constraints[key]:	
+				if len(self.domains[key]) == 1 and len(self.domains[value]) == 1 and (self.domains[key]) == (self.domains[value]):
+					return True
 		return False
 
 	def __lt__(self, other):

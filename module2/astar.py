@@ -26,7 +26,6 @@ class Astar():
         '''
         if mode == 'A*':
             heapq.heapify(self.opened)   
-        
         if (len(self.opened)):
             self.prev_current = self.current
             if mode == 'A*':
@@ -38,12 +37,11 @@ class Astar():
             self.closed.append(self.current)
             if self.current.is_solution():
                 return self.statistics()
-            print 'solutinhelvett'
             for neighbour in self.current.get_neighbours():
-                print "fjas"
                 if neighbour.is_illegal():
+                    print("Illegal")
                     continue
-
+                print("legal")
                 temporary_g = self.current.g + self.current.get_arc_cost()
 
                 if neighbour not in self.opened and neighbour not in self.closed:

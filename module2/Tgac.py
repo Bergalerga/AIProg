@@ -15,7 +15,7 @@ class GAC():
 			if domain_reduced:
 				variable = revise_pair[0]
 				for constraint in self.state.constraints[variable]:
-					if len(self.state.domain[constraint]) != 1:
+					if len(self.state.domains[constraint]) != 1:
 						self.revise_queue.append((constraint, self.state.constraints[constraint]))
 		return self.state
 
