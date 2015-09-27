@@ -6,7 +6,7 @@ class Node():
     '''
 
 
-    def __init__(self, x, y, unwalkable = False, startnode = False, endnode = False):
+    def __init__(self, x, y, illegal = False, startnode = False, endnode = False):
         '''
         Initializes the Node object, setting the given coordinates, and sets h, g and f values to 0.
         It also initializes the predecessor of the node, and a list of children.
@@ -18,11 +18,11 @@ class Node():
         self.f = 0
         self.predecessor = None
         self.neighbours = []
-        self.unwalkable = unwalkable
+        self.illegal = illegal
         self.startnode = startnode
         self.endnode = endnode
 
-    def get_arc_cost(self, other):
+    def get_arc_cost(self):
         return 1
 
     def get_neighbours(self):
@@ -30,6 +30,9 @@ class Node():
 
     def get_h(self):
         return self.h
+
+    def is_illegal(self):
+        return self.illegal
 
     def distance_to_node(self, other):
         distance = math.fabs(self.x - other.x)

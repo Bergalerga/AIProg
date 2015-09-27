@@ -39,10 +39,10 @@ class Astar():
             if self.current.is_solution():
                 return self.statistics()
             for neighbour in self.current.get_neighbours():
-                if neighbour.unwalkable:
+                if neighbour.is_illegal():
                     continue
 
-                temporary_g = self.current.g + self.current.get_arc_cost(neighbour)
+                temporary_g = self.current.g + self.current.get_arc_cost()
 
                 if neighbour not in self.opened and neighbour not in self.closed:
 

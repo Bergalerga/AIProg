@@ -59,7 +59,7 @@ class Board():
                 for elements in unWalkableAreas:
                     if x >= elements[0] and y >= elements[1]:
                         if x <= elements[0] + (elements[2] - 1) and y <= elements[1] +(elements[3] - 1):
-                            y_list[y].unwalkable=True
+                            y_list[y].illegal=True
 
             self.nodes.append(y_list)
 
@@ -136,7 +136,7 @@ class GUI(tk.Frame):
                     fill = 'green'
                 elif (board.nodes[width][height].endnode):
                     fill = 'grey'
-                elif (board.nodes[width][height].unwalkable):
+                elif (board.nodes[width][height].illegal):
                     fill = 'red'
                 else: 
                     fill = 'white'

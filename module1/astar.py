@@ -24,6 +24,7 @@ class Astar():
         This is the agenda loop. It will return the next node chosen. Has a parameter mode, which
         defines which algorithm to perform.
         '''
+        self.mode = mode
         if mode == 'A*':
             heapq.heapify(self.opened)   
         
@@ -39,10 +40,10 @@ class Astar():
             if self.current.is_solution():
                 return self.statistics()
             for neighbour in self.current.get_neighbours():
-                if neighbour.unwalkable:
+                if neighbour.is_illegal():
                     continue
 
-                temporary_g = self.current.g + self.current.get_arc_cost(neighbour)
+                temporary_g = self.current.g + self.current.get_arc_cost()
 
                 if neighbour not in self.opened and neighbour not in self.closed:
 
@@ -93,5 +94,5 @@ class Astar():
         while node.predecessor:
             count += 1
             node = node.predecessor
-        return "Nodes generated: " + str(len(self.opened) + len(self.closed)) + " | Solution length: " + str(count)
+        return "Mode: " + self.mode + " | Nodes generated: " + str(len(self.opened) + len(self.closed)) + " | Solution length: " + str(count)
 
