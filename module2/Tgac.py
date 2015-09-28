@@ -6,7 +6,8 @@ class GAC():
 
 	def initialize(self):
 		for variable in self.state.variables:
-			self.revise_queue.append((variable, self.state.constraints[variable]))
+			if variable in self.state.constraints:
+				self.revise_queue.append((variable, self.state.constraints[variable]))
 
 	def domain_filtering_loop(self):
 		while self.revise_queue:

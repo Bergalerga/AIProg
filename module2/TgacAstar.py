@@ -9,19 +9,20 @@ class gacAstar():
 		csp_problem = None
 
 	def solve(self):
-		board = Board('testen.txt')
+		board = Board('1.txt')
 		board.parse_text_file()
 		domains = self.make_domain_dict(board.indexes, 3)
 		constraints = self.make_constraint_dict(board.edges)
+		print(constraints)
 		csp_state = CSPState(board.indexes, domains, constraints)
 		gac = GAC(csp_state)
 		gac.initialize()
 		new_state = gac.domain_filtering_loop()
 		astar = Astar(new_state)
-		while not new_state.is_solution():
-			print(new_state.domains)
-			print("----------")
+		while True:
 			new_state = astar.solve('A*')
+			if type(new_state) is str:
+				break
 			gac = GAC(new_state)
 			gac.initialize()
 			new_state = gac.domain_filtering_loop()

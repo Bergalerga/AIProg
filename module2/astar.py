@@ -15,7 +15,7 @@ class Astar():
         self.current = node
         self.opened = []
         self.closed = []
-        self.current.f = self.current.g + self.current.h
+        self.current.f = self.current.g + self.current.get_h()
         self.opened.append(self.current)
         self.prev_current = None
 
@@ -39,9 +39,7 @@ class Astar():
                 return self.statistics()
             for neighbour in self.current.get_neighbours():
                 if neighbour.is_illegal():
-                    print("Illegal")
                     continue
-                print("legal")
                 temporary_g = self.current.g + self.current.get_arc_cost()
 
                 if neighbour not in self.opened and neighbour not in self.closed:
@@ -55,6 +53,7 @@ class Astar():
                     self.evaluate(neighbour, self.current)
                     if neighbour in self.closed:
                        self.propagate(neighbour)
+            print(self.current.domains)
             return self.current
 
     def evaluate(self, child, predecessor):
@@ -63,7 +62,7 @@ class Astar():
         '''
         child.predecessor = predecessor
         child.g = predecessor.g + child.get_arc_cost()
-        child.f = child.g + child.h
+        child.f = child.g + child.get_h()
 
     def propagate(self, predecessor):
         '''
@@ -73,7 +72,7 @@ class Astar():
             if (predecessor.g+1) < child.g:
                 child.predecessor = predecessor
                 child.g = predecessor.g + child.get_arc_cost()
-                child.f = child.g + child.h
+                child.f = child.g + child.get_h()
                 self.propagate(child)
 
     def clear(self):
@@ -83,8 +82,8 @@ class Astar():
         self.current = self.startnode
         self.opened = []
         self.closed = []
-        self.current.h = self.current.h
-        self.current.f = self.current.g + self.current.h
+        self.current.h = self.current.get_h()
+        self.current.f = self.current.g + self.current.get_h()
         self.opened.append(self.current)
 
     def statistics(self):

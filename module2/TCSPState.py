@@ -1,4 +1,5 @@
 import copy
+import math
 
 class CSPState():
 	def __init__(self, variables, domains, constraints):
@@ -23,13 +24,20 @@ class CSPState():
 
 	#Will create successornodes from current state
 	def get_neighbours(self):
-		for variable in self.variables:
-			for color in self.domains[variable]:
-				neighbour_state = copy.deepcopy(self)
-				neighbour_state.domains[variable] = [color]
-				self.neighbours.append(neighbour_state)
+		minlen = float("inf")
+		current_domain = None
+		for domain in range(len(self.domains)):
+			if len(self.domains[domain]) == 1:
+				continue
+			if len(self.domains[domain]) < minlen:
+				minlen = len(self.domains[domain])
+				current_domain = domain
+		for color in self.domains[current_domain]:
+			neighbour_state = copy.deepcopy(self)
+			neighbour_state.domains[current_domain] = [color]
+			self.neighbours.append(neighbour_state)
 		return self.neighbours
-
+		
 	#Returns arc_cost, in this case it is always 1
 	def get_arc_cost(self):
 		return 1
@@ -37,8 +45,8 @@ class CSPState():
 	#Returns the heurestic distance to a solution, based on how large remaining domains are
 	def get_h(self):
 		h = 0
-		for domain in self.domains:
-			h += (len(domain)-1)
+		for domain in range(len(self.domains)):
+			h += len(self.domains[domain])
 		return h
 
 	def is_illegal(self):
@@ -56,3 +64,9 @@ class CSPState():
 		if self.f == other.f:
 			return self.h < other.h
 		return self.f < other.f
+
+	def __eq__(self, other):
+		'''
+
+		'''
+		return self.domains == other.domains
