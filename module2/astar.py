@@ -25,14 +25,9 @@ class Astar():
         defines which algorithm to perform.
         '''
         if mode == 'A*':
-            heapq.heapify(self.opened)   
+            heapq.heapify(self.opened)
         if (len(self.opened)):
             self.prev_current = self.current
-            print "openlist"
-            for state in self.opened:
-
-                print state.domains
-            print "-----------------------"
             if mode == 'A*':
                 self.current = heapq.heappop(self.opened)
             elif mode =='DFS':
@@ -44,8 +39,10 @@ class Astar():
                 return self.statistics()
 
             for neighbour in self.current.get_neighbours():
+                print(len(self.opened))
                 if neighbour.is_illegal():
                     continue
+
                 temporary_g = self.current.g + self.current.get_arc_cost()
 
                 if neighbour not in self.opened and neighbour not in self.closed:
@@ -60,6 +57,8 @@ class Astar():
                     if neighbour in self.closed:
                        self.propagate(neighbour)
             return self.current
+        else:
+            return "Failure"
 
     def evaluate(self, child, predecessor):
         '''

@@ -42,3 +42,14 @@ class Board():
 		self.indexes = list()
 		for vertex in self.vertexes:
 			self.indexes.append(int(vertex[0]))
+
+		print("Vertexes:")
+		print(self.vertexes)
+		print("Edges:")
+		print(self.edges)
+		print("Indexes")
+		print(self.indexes)
+
+b = Board("1.txt")
+b.parse_text_file()
+

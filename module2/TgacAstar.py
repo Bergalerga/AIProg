@@ -9,7 +9,7 @@ class gacAstar():
 		csp_problem = None
 
 	def solve(self):
-		board = Board('1.txt')
+		board = Board('testen.txt')
 		board.parse_text_file()
 		domains = self.make_domain_dict(board.indexes, 3)
 		constraints = self.make_constraint_dict(board.edges)
@@ -21,8 +21,8 @@ class gacAstar():
 		while True:
 			new_state = astar.solve('A*')
 			if type(new_state) is str:
+				print(new_state)
 				break
-			gac.rerun(new_state)
 			new_state = gac.domain_filtering_loop()
 
 	def make_domain_dict(self, variables, K):

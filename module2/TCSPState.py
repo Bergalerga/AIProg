@@ -35,8 +35,10 @@ class CSPState():
 				current_domain = domain
 		for color in self.domains[current_domain]:
 			neighbour_state = copy.deepcopy(self)
-			#gac = GAC(self, self.domains[current_domain])
 			neighbour_state.domains[current_domain] = [color]
+			gac = GAC(neighbour_state)
+			gac.initialize()
+			neighbour_state = gac.domain_filtering_loop()
 			self.neighbours.append(neighbour_state)
 		return self.neighbours
 		
@@ -53,9 +55,12 @@ class CSPState():
 
 	def is_illegal(self):
 		for key in self.constraints:
-			for value in self.constraints[key]:	
+			for value in self.constraints[key]:
 				if len(self.domains[key]) == 1 and len(self.domains[value]) == 1 and (self.domains[key]) == (self.domains[value]):
 					return True
+		for key in self.domains:
+			if len(self.domains[key]) == 0:
+				return True
 		return False
 
 	def __lt__(self, other):
