@@ -1,6 +1,6 @@
-from GUI import GUI
-
 class Board():
+	
+
 	'''
 	self.numberOfVertices = the number of vertices in the graph
 	self.numberOfEdges = the number of edges in the graph
@@ -11,7 +11,6 @@ class Board():
 	[1] denotes the second vertex.
 	self.variables = list of variable objects containing the edges.
 	'''
-
 	def __init__(self, file, K):
 		self.K = K
 		file = open(file, 'r')
@@ -28,11 +27,17 @@ class Board():
 		self.vertexes = list()
 		self.edges = list()
 		file_index = 1
+		self.max_width = 0
+		self.max_height = 0
 		while True:
 			vertice = self.file_data[file_index].replace("\n", "").split(" ")
 			if (len(vertice)) != 3:
 				break
 			self.vertexes.append([float(x) for x in vertice])
+			if float(vertice[1]) > self.max_width:
+				self.max_width = float(vertice[1])
+			if float(vertice[2]) > self.max_height:
+				self.max_height = float(vertice[2])
 			file_index += 1
 		while file_index < len(self.file_data):
 			edge = self.file_data[file_index].replace("n", "").split(" ")

@@ -36,6 +36,7 @@ class Astar():
                 self.current = self.opened.pop(0)
             self.closed.append(self.current)
             if self.current.is_solution():
+                self.prev_current = self.current
                 return self.statistics()
 
             for neighbour in self.current.get_neighbours():
@@ -55,7 +56,6 @@ class Astar():
                     self.evaluate(neighbour, self.current)
                     if neighbour in self.closed:
                        self.propagate(neighbour)
-            print("derp")
             return self.current
         else:
             return "Failure"

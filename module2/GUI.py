@@ -1,5 +1,7 @@
 import Tkinter as tk
 
+from Board import Board
+
 class GUI(tk.Frame):
 	'''
 	Class responsible for drawing the user interface. Also contains rectangles.
@@ -65,6 +67,18 @@ class GUI(tk.Frame):
 									node.cartesian_x * circle_size + 15,
 									node.cartesian_y * circle_size + 15,
 									fill = color)
+
+print("LOL")
+if __name__ == "__main__":
+	print("lol")
+	b = Board("1.txt", 4)
+	b.parse_text_file()
+	gui = GUI(b, None)
+	gui.build()
+	gui.pack()
+	vertexcoloring = probleminstance(b.constraint_dict, b.domain_dict)
+	print("")
+	gui.mainloop()
 
 	
 

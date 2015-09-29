@@ -1,10 +1,9 @@
-from board import Board
 from gac import GAC
 from astar import Astar
 
 import copy
 
-class probleminstance():
+class Probleminstance():
 
 	
 	'''
@@ -29,23 +28,22 @@ class probleminstance():
 		#init gac
 		self.gac = GAC()
 		self.domains = self.gac.initialize(self.constraints, self.domains)
+		self.astar = Astar(self)
+		
 
-		astar = Astar(self)
-		while True:
-			current = astar.solve("A*")
-			if type(current) == str:
-				print current
-				break
+	def solve(self):
+		'''
 
-
-
+		'''
+		self.current = self.astar.solve("A*")
+		return [self.current, self.astar.prev_current]
 
 	def is_solution(self):
 		'''
 
 		'''
 		for domain in self.domains:
-			if len(self.domains[domain]) > 1:
+			if len(self.domains[domain]) != 1:
 				return False
 		return True
 
@@ -94,7 +92,7 @@ class probleminstance():
 		'''
 		for node in self.constraints:
 			for edge in self.constraints[node]:
-				if len(self.domains[node]) == 1 and len(self.domains[edge]) == 1 and self.domains[node] == self.domains[edge]:
+				if (len(self.domains[node]) == 1) and (len(self.domains[edge]) == 1) and (self.domains[node][0] == self.domains[edge][0]):
 					return True
 		return False
 
@@ -111,9 +109,3 @@ class probleminstance():
 
 		'''
 		return self.domains == other.domains
-
-
-if __name__ == "__main__":
-	b = Board("6.txt", 4)
-	b.parse_text_file()
-	vertexcoloring = probleminstance(b.constraint_dict, b.domain_dict)
