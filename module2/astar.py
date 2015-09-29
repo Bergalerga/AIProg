@@ -28,6 +28,11 @@ class Astar():
             heapq.heapify(self.opened)   
         if (len(self.opened)):
             self.prev_current = self.current
+            print "openlist"
+            for state in self.opened:
+
+                print state.domains
+            print "-----------------------"
             if mode == 'A*':
                 self.current = heapq.heappop(self.opened)
             elif mode =='DFS':
@@ -37,6 +42,7 @@ class Astar():
             self.closed.append(self.current)
             if self.current.is_solution():
                 return self.statistics()
+
             for neighbour in self.current.get_neighbours():
                 if neighbour.is_illegal():
                     continue
@@ -53,7 +59,6 @@ class Astar():
                     self.evaluate(neighbour, self.current)
                     if neighbour in self.closed:
                        self.propagate(neighbour)
-            print(self.current.domains)
             return self.current
 
     def evaluate(self, child, predecessor):

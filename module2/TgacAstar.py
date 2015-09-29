@@ -13,7 +13,6 @@ class gacAstar():
 		board.parse_text_file()
 		domains = self.make_domain_dict(board.indexes, 3)
 		constraints = self.make_constraint_dict(board.edges)
-		print(constraints)
 		csp_state = CSPState(board.indexes, domains, constraints)
 		gac = GAC(csp_state)
 		gac.initialize()
@@ -25,8 +24,6 @@ class gacAstar():
 				break
 			gac.rerun(new_state)
 			new_state = gac.domain_filtering_loop()
-			
-
 
 	def make_domain_dict(self, variables, K):
 		domains = {}
@@ -45,6 +42,10 @@ class gacAstar():
 				constraints[edge[0]].append(edge[1])
 			else:
 				constraints[edge[0]] = [edge[1]]
+			if edge[1] in constraints:
+				constraints[edge[1]].append(edge[0])
+			else:
+				constraints[edge[1]] = [edge[0]]
 		return constraints
 
 test = gacAstar()
