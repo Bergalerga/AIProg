@@ -1,5 +1,6 @@
 import copy
 import math
+from Tgac import GAC
 
 class CSPState():
 	def __init__(self, variables, domains, constraints):
@@ -33,7 +34,10 @@ class CSPState():
 				minlen = len(self.domains[domain])
 				current_domain = domain
 		for color in self.domains[current_domain]:
+			print("Copying")
 			neighbour_state = copy.deepcopy(self)
+			print("Copied")
+			#gac = GAC(self, self.domains[current_domain])
 			neighbour_state.domains[current_domain] = [color]
 			self.neighbours.append(neighbour_state)
 		return self.neighbours

@@ -23,8 +23,7 @@ class gacAstar():
 			new_state = astar.solve('A*')
 			if type(new_state) is str:
 				break
-			gac = GAC(new_state)
-			gac.initialize()
+			gac.rerun(new_state)
 			new_state = gac.domain_filtering_loop()
 			
 
