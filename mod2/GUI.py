@@ -3,6 +3,7 @@ from tkFileDialog import askopenfilename
 import sys
 import math
 import time
+from constraints import Constraints
 
 from board import Board
 from probleminstance import Probleminstance
@@ -19,6 +20,7 @@ class GUI(tk.Frame):
 		self.parent = parent
 		self.canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0, width=600, height=600)
 		self.controller = Controller(self)
+		self.id_list = list()
 
 	def build(self, board):
 		'''
@@ -91,6 +93,7 @@ class Controller:
 		'''
 		self.gui = gui
 		self.K = 2
+		self.colored = list()
 
 	def reset(self):
 		'''
@@ -98,6 +101,7 @@ class Controller:
 		'''
 		self.gui.clear()
 		self.gui.build(self.board)
+		self.colored = dict()
 
 	def open_board(self):
 		'''
@@ -117,7 +121,9 @@ class Controller:
 		self.board.K = int(number)
 		self.board.make_domain_dict()
 		self.reset()
-		self.vc = Probleminstance(self.board.constraint_dict, self.board.domain_dict)
+		c = Constraints()
+		setattr(Constraints, "constraints", self.board.constraint_dict)
+		self.vc = Probleminstance(self.board.domain_dict)
 		self.vc.initialize()
 		self.solve_loop()
 
@@ -133,28 +139,47 @@ class Controller:
 			root.after(refresh_time, self.solve_loop)
 		else:
 			self.color_vertexes(prev_current)
-			print("done")
+			print(prev_current.domains)
+			print("---------")
+			print(prev_current.constraints)
+			print(current)
 
 	def color_vertexes(self, current):
 		'''
 
 		'''
 		for vertex in current.domains:
-				if len(current.domains[vertex]) == 1:
-					a = self.board.vertexes[vertex]
-					num = current.domains[vertex][0]
-					x = a[1]
-					y = a[2]
-					if num == 0:
-						self.gui.color_vertex(x, y, 'blue')
-					elif num == 1:
-						self.gui.color_vertex(x, y, 'green')
-					elif num == 2:
-						self.gui.color_vertex(x, y, 'yellow')
-					elif num == 3:
-						self.gui.color_vertex(x, y, 'red')
-					else:
-						self.gui.color_vertex(x, y, 'purple')
+			if len(current.domains[vertex]) == 1:
+				a = self.board.vertexes[vertex]
+				num = current.domains[vertex][0]
+				x = a[1]
+				y = a[2]
+				if [x, y] in self.colored.keys():
+					if self.colored[x, y] == num:
+						continue
+				if num == 0:
+					self.gui.color_vertex(x, y, 'blue')
+				elif num == 1:
+					self.gui.color_vertex(x, y, 'green')
+				elif num == 2:
+					self.gui.color_vertex(x, y, 'yellow')
+				elif num == 3:
+					self.gui.color_vertex(x, y, 'red')
+				elif num == 4:
+					self.gui.color_vertex(x, y, 'cadet blue')
+				elif num == 5:
+					self.gui.color_vertex(x, y, 'lemon chiffon')
+				elif num == 6:
+					self.gui.color_vertex(x, y, 'pink')
+				elif num == 7:
+					self.gui.color_vertex(x, y, 'dark khaki')
+				elif num == 8:
+					self.gui.color_vertex(x, y, 'chocolate')
+				elif num == 9:
+					self.gui.color_vertex(x, y, 'seashell2')
+				else:
+					self.gui.color_vertex(x, y, 'black')
+				self.colored[x, y] = num
 
 if __name__ == "__main__":
 	global refresh_time

@@ -1,5 +1,6 @@
 from gac import GAC
 from astar import Astar
+from constraints import Constraints
 
 import copy
 
@@ -9,7 +10,7 @@ class Probleminstance():
 	'''
 
 	'''
-	def __init__(self, contraints = {}, domains = {}):
+	def __init__(self, domains = {}):
 		'''
 
 		'''
@@ -21,7 +22,7 @@ class Probleminstance():
 		self.neighbours = []
 
 		#GAC INFO
-		self.constraints = contraints
+		self.constraints = Constraints.constraints
 		self.domains = domains
 
 		#init gac
@@ -32,7 +33,7 @@ class Probleminstance():
 
 		'''
 
-		self.gac.initialize(self.constraints, self.domains)
+		self.gac.initialize(self.domains)
 		self.domains = self.gac.domain_filtering_loop()
 		self.astar = Astar(self)
 		
@@ -70,9 +71,10 @@ class Probleminstance():
 		for color in self.domains[current_domain]:
 			copy_domains = copy.deepcopy(self.domains)
 			copy_domains[current_domain] = [color]
-			copy_domains = self.gac.rerun(self.constraints, copy_domains, current_domain)
-			#neighbours.append(self)
-			neighbours.append(Probleminstance(self.constraints, copy_domains))
+			copy_domains = self.gac.rerun(copy_domains, current_domain)
+			pi = Probleminstance(copy_domains)
+			if not pi.is_illegal():
+				neighbours.append(pi)
 		self.neighbours = neighbours
 		return neighbours
 
