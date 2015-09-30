@@ -1,0 +1,2 @@
+class Constraints(object):
+	constraints = ""
