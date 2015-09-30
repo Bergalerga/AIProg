@@ -1,3 +1,5 @@
+from math import fabs
+
 class Board():
 	
 
@@ -34,10 +36,10 @@ class Board():
 			if (len(vertice)) != 3:
 				break
 			self.vertexes.append([float(x) for x in vertice])
-			if float(vertice[1]) > self.max_width:
-				self.max_width = float(vertice[1])
-			if float(vertice[2]) > self.max_height:
-				self.max_height = float(vertice[2])
+			if fabs(float(vertice[1])) > self.max_width:
+				self.max_width = fabs(float(vertice[1]))
+			if fabs(float(vertice[2])) > self.max_height:
+				self.max_height = fabs(float(vertice[2]))
 			file_index += 1
 		while file_index < len(self.file_data):
 			edge = self.file_data[file_index].replace("n", "").split(" ")

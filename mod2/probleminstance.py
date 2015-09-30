@@ -24,10 +24,16 @@ class Probleminstance():
 		self.constraints = contraints
 		self.domains = domains
 
-
 		#init gac
 		self.gac = GAC()
-		self.domains = self.gac.initialize(self.constraints, self.domains)
+
+	def initialize(self):
+		'''
+
+		'''
+
+		self.gac.initialize(self.constraints, self.domains)
+		self.domains = self.gac.domain_filtering_loop()
 		self.astar = Astar(self)
 		
 
@@ -62,11 +68,11 @@ class Probleminstance():
 				current_domain = domain
 
 		for color in self.domains[current_domain]:
-			neighbour = copy.deepcopy(self)
-			neighbour.domains[current_domain] = [color]
-			neighbour.domains = self.gac.rerun(neighbour.domains, current_domain)
-			if not neighbour.is_illegal():
-				neighbours.append(neighbour)
+			copy_domains = copy.deepcopy(self.domains)
+			copy_domains[current_domain] = [color]
+			copy_domains = self.gac.rerun(self.constraints, copy_domains, current_domain)
+			#neighbours.append(self)
+			neighbours.append(Probleminstance(self.constraints, copy_domains))
 		self.neighbours = neighbours
 		return neighbours
 
@@ -109,3 +115,9 @@ class Probleminstance():
 
 		'''
 		return self.domains == other.domains
+
+	def __str__(self):
+		'''
+
+		'''
+		return str(self.domains)

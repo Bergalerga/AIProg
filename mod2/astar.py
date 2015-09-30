@@ -46,7 +46,6 @@ class Astar():
                 temporary_g = self.current.g + self.current.get_arc_cost()
 
                 if neighbour not in self.opened and neighbour not in self.closed:
-
                     self.evaluate(neighbour, self.current)
                     if mode == 'A*':
                         heapq.heappush(self.opened, neighbour)

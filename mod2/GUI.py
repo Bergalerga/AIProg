@@ -1,6 +1,8 @@
 import Tkinter as tk
 from tkFileDialog import askopenfilename
 import sys
+import math
+import time
 
 from board import Board
 from probleminstance import Probleminstance
@@ -23,35 +25,33 @@ class GUI(tk.Frame):
 
 		'''
 		self.board = board
-
-		center_width = self.canvas.winfo_reqwidth()
-		center_height = self.canvas.winfo_reqheight()
+		self.middle_x = self.canvas.winfo_reqwidth() / 2
+		self.middle_y = self.canvas.winfo_reqheight() / 2
+		self.x_multiplicative = self.middle_x / self.board.max_width
+		self.y_multiplicative = self.middle_y / self.board.max_height
 		self.id_list = list()
-		
 		self.circle_size = 10
 		for vertex in self.board.vertexes:
-			x = (vertex[1] / self.board.max_width) * (center_width - self.circle_size)
-			y = (vertex[2] / self.board.max_height) * (center_height - self.circle_size)
-			#x = vertex[1]
-			#y = vertex[2]
-			print(x)
-			print(y)
-
-			self.id_list.append(self.canvas.create_oval(x, 
-														y, 
-														x + 10, 
-														y + 10))
+			x = (vertex[1] * self.x_multiplicative) + (self.middle_x - self.circle_size)
+			y = (vertex[2] * self.y_multiplicative) + (self.middle_y - self.circle_size)
+			self.id_list.append(self.canvas.create_oval(x, y, x + 10, y + 10))
+		
 		for edge in self.board.edges:
-			x1 = self.board.vertexes[edge[0]][1]
-			y1 = self.board.vertexes[edge[0]][2]
-			x2 = self.board.vertexes[edge[1]][1]
-			y2 = self.board.vertexes[edge[1]][2]
-			self.canvas.create_line(x1 + 5,
-									y1 + 5,
-									x2 + 5,
-									y2 + 5)
+			x1 = (self.board.vertexes[edge[0]][1] * self.x_multiplicative) + (self.middle_x - self.circle_size)
+			y1 = (self.board.vertexes[edge[0]][2] * self.y_multiplicative) + (self.middle_y - self.circle_size)
+			x2 = (self.board.vertexes[edge[1]][1] * self.x_multiplicative) + (self.middle_x - self.circle_size)
+			y2 = (self.board.vertexes[edge[1]][2] * self.y_multiplicative) + (self.middle_y - self.circle_size)
+			self.canvas.create_line(x1 + 5, y1 + 5, x2 + 5, y2 + 5)
 
 		self.canvas.pack()
+
+	def color_vertex(self, x, y, color='white'):
+		'''
+		Colors a given node with the color defined.
+		'''
+		x = (x * self.x_multiplicative) + (self.middle_x - self.circle_size)
+		y = (y * self.y_multiplicative) + (self.middle_y - self.circle_size)
+		self.canvas.create_oval(x, y, x + 10, y + 10, fill = color)
 
 	def make_menu(self):
 		'''
@@ -76,18 +76,6 @@ class GUI(tk.Frame):
 		menu_bar.add_cascade(label="K", menu=k_menu)
 
 		root.config(menu=menu_bar)
-
-	def color_vertex(self, x, y, color='white'):
-		'''
-		Colors a given node with the color defined.
-		'''
-
-		self.canvas.create_oval(x * self.circle_size,
-								y * self.circle_size,
-								x * self.circle_size + 10,
-								y * self.circle_size + 10,
-								fill = color)
-
 
 	def clear(self):
 		self.canvas.delete("all")
@@ -130,6 +118,7 @@ class Controller:
 		self.board.make_domain_dict()
 		self.reset()
 		self.vc = Probleminstance(self.board.constraint_dict, self.board.domain_dict)
+		self.vc.initialize()
 		self.solve_loop()
 
 	def solve_loop(self):
@@ -144,6 +133,7 @@ class Controller:
 			root.after(refresh_time, self.solve_loop)
 		else:
 			self.color_vertexes(prev_current)
+			print("done")
 
 	def color_vertexes(self, current):
 		'''
@@ -175,13 +165,3 @@ if __name__ == "__main__":
 	gui = GUI(root)
 	gui.make_menu()
 	gui.mainloop()
-
-
-
-
-
-
-	
-
-		
-

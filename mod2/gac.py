@@ -14,8 +14,7 @@ class GAC:
 		for node in constraints:
 			for constraint in constraints[node]:
 				self.revise_queue.append([node, constraint])
-		self.domain_filtering_loop()
-		return self.domains
+		
 		
 
 	def domain_filtering_loop(self):
@@ -28,6 +27,7 @@ class GAC:
 				for constraint_edge in self.constraints[constraint]:
 					if [constraint, constraint_edge] not in self.revise_queue:
 						self.revise_queue.append([constraint, constraint_edge])
+		return self.domains
 
 	def revise(self, node, constraint):
 		'''
@@ -39,10 +39,12 @@ class GAC:
 				return True
 		return False
 
-	def rerun(self, domains = {}, focal_node = None):
+	def rerun(self, constraints = {}, domains = {}, focal_node = None):
 		'''
 
 		'''
+		self.revise_queue = list()
+		self.constraints = constraints
 		self.domains = domains
 		for constraint in self.constraints[focal_node]:
 			self.revise_queue.append([constraint, focal_node])
