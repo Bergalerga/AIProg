@@ -1,3 +1,4 @@
+from itertools import combinations
 
 class Board():
 	'''
@@ -34,19 +35,39 @@ class Board():
 	def make_domain_dict(self):
 		self.domain_dict = {}
 		for node in range(self.row_length):
-			number_of_spaces = -1
-			total_block_length = 0
-			for block_length in self.rows_info[node]:
-				number_of_spaces += 1
-				total_block_length += block_length
-			places_to_put_space = self.row_length - total_block_length - number_of_spaces
+			length, block_length, number_of_blocks = self.get_free_spaces(self.row_length, self.rows_info[node])
+			free_spaces = length - block_length - (number_of_blocks -1)
 
-			print node, self.rows_info[node], number_of_spaces, total_block_length, places_to_put_space
+			blocks = self.rows_info[node]
+			
+			print node
+			print blocks
+			domain = list()
+			for space_placement in self.space_placement(free_spaces, number_of_blocks + 1):
+				print space_placement
+
+				
+
+
+			print "---------------"
+			
+
+
 
 	def make_constraints():
 		pass
 
+	def get_free_spaces(self, length, block_array):
+		block_length = 0
+		number_of_blocks = 0
+		for block in block_array:
+			number_of_blocks += 1
+			block_length += block
+		return length, block_length, number_of_blocks
 
+	def space_placement(self, spaces, length):
+		for c in combinations(range(spaces + length - 1), length - 1):
+			yield tuple(b - a - 1 for a, b in zip((-1,) + c, c + (spaces + length - 1,)))
 
 
 if __name__ == "__main__":

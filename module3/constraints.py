@@ -1,4 +1,4 @@
-class Constraint():
+class Constraints():
 	'''
 	Expression is how the constraint is defined, ex x != y
 	Involved is a list of all variables involved in constraint, in this case all rows are involved for a column, and all columns are involved for a row
