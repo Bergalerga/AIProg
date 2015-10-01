@@ -1,8 +1,6 @@
 import Tkinter as tk
 from tkFileDialog import askopenfilename
 import sys
-import math
-import time
 from constraints import Constraints
 
 from board import Board
@@ -154,9 +152,11 @@ class Controller:
 				num = current.domains[vertex][0]
 				x = a[1]
 				y = a[2]
-				if [x, y] in self.colored.keys():
+				try:
 					if self.colored[x, y] == num:
 						continue
+				except KeyError:
+					self.colored[x, y] = num
 				if num == 0:
 					self.gui.color_vertex(x, y, 'blue')
 				elif num == 1:
