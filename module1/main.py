@@ -29,20 +29,16 @@ class Board():
         '''
         Parses the textfile into a 2-dimensional list, containing nodes for each space in the board.
         '''
-        boardSize = fileData[0].replace("(","").replace(")","").rstrip().split(",")
+        boardSize = fileData[0].rstrip().split(" ")
         self.rows = int(boardSize[0])
         self.columns = int(boardSize[1])
 
-        startAndStop = re.findall(r'[^,;\s]+', fileData[1].replace("(", "").replace(")", ""))
-        #self.startnode = Node(int(startAndStop[0]), int(startAndStop[1]))
-        #self.endnode = Node(int(startAndStop[2]), int(startAndStop[3]))
-
+        startAndStop = fileData[1].rstrip().split(" ")
         unWalkableAreas = []
         for elements in fileData[2:]:
-            unWalkable = elements.replace("(","").replace(")","").rstrip().split(",")
+            unWalkable = elements.rstrip().split(" ")
             area = [int(x) for x in unWalkable]
             unWalkableAreas.append(area)
-        
         self.nodes = list()
         for x in range(self.rows):
             y_list = list()
@@ -113,24 +109,31 @@ class GUI(tk.Frame):
         '''
         tk.Frame.__init__(self, parent)
         self.parent = parent
-        self.canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0, width=600, height=600)
+        self.width = 600
+        self.height = 600
+        self.canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0, width=self.width, height=self.height)
+        self.id_list = list()
 
-    def build(self, board, size):
+    def build(self, board):
         '''
         Builds the GUI from a given board, and packing it in the end.
         '''
         self.board = board
-        self.size = size
+        #TODO
+        if self.width > self.height:
+            self.size = self.width / board.rows
+        else:
+            self.size = self.height / board.columns
 
         self.frame = tk.Frame(self, None)
         self.frame.grid(column=0, row=0)
 
         for width in reversed(range(board.rows)):
             for height in range(board.columns):
-                top = (board.columns - height - 1) * size
-                left = width * size
-                bottom = top + size
-                right = left + size
+                top = (board.columns - height - 1) * self.size
+                left = width * self.size
+                bottom = top + self.size
+                right = left + self.size
 
                 if (board.nodes[width][height].startnode):
                     fill = 'green'
@@ -157,13 +160,15 @@ class GUI(tk.Frame):
         left = x * self.size
         bottom = top + self.size
         right = left + self.size
-        self.canvas.create_rectangle(left, top, right, bottom, fill = fill)
+        self.id_list.append(self.canvas.create_rectangle(left, top, right, bottom, fill = fill))
 
     def drawPath(self, node, color):
         '''
         Given a node, the method will draw the full path of all the nodes where this node 
         came from, all the way back to the start node.
         '''
+        for item in self.id_list:
+            self.canvas.delete(item)
         while node.predecessor:
             if node != self.board.startnode or node != self.board.endnode:
                 self.drawRectangle(node, color)
@@ -222,7 +227,7 @@ class Controller(object):
         to best first.
         '''
         self.reset()
-        self.gui.build(self.board, 16)
+        self.gui.build(self.board)
         if alg == 'best-first':
             self.solveAstar()
         elif alg == 'bfs':
@@ -243,7 +248,6 @@ class Controller(object):
         '''
         current = self.astar.solve('A*')
         if isinstance(current, Node):
-            self.gui.drawPath(self.astar.prev_current, 'pink')
             self.gui.drawPath(current, 'black')
             root.after(refreshTime, self.solveAstar)
         else:
@@ -287,7 +291,7 @@ class Controller(object):
         filename = askopenfilename(parent=root)
         self.board = Board(filename)    
         self.gui.clear()
-        self.gui.build(self.board, 16)
+        self.gui.build(self.board)
         gui.pack(side="top", fill="both", expand="false")  
         self.astar = Astar(self.board.startnode)
 

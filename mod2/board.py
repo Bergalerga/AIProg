@@ -32,7 +32,7 @@ class Board():
 		self.max_width = 0
 		self.max_height = 0
 		while True:
-			vertice = self.file_data[file_index].replace("\n", "").split(" ")
+			vertice = self.file_data[file_index].rstrip("\n").rstrip(" ").split(" ")
 			if (len(vertice)) != 3:
 				break
 			self.vertexes.append([float(x) for x in vertice])
@@ -42,7 +42,7 @@ class Board():
 				self.max_height = fabs(float(vertice[2]))
 			file_index += 1
 		while file_index < len(self.file_data):
-			edge = self.file_data[file_index].replace("n", "").split(" ")
+			edge = self.file_data[file_index].rstrip("\n").rstrip(" ").split(" ")
 			if (len(edge)) != 2:
 				break
 			self.edges.append([int(x) for x in edge])

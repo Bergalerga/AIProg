@@ -1,4 +1,4 @@
-from node import Node
+#from node import Node
 import heapq
 
 class Astar():
@@ -15,7 +15,7 @@ class Astar():
         self.current = node
         self.opened = []
         self.closed = []
-        self.current.f = self.current.g + self.current.h
+        self.current.f = self.current.g + self.current.get_h()
         self.opened.append(self.current)
         self.prev_current = None
 
@@ -24,10 +24,8 @@ class Astar():
         This is the agenda loop. It will return the next node chosen. Has a parameter mode, which
         defines which algorithm to perform.
         '''
-        self.mode = mode
         if mode == 'A*':
-            heapq.heapify(self.opened)   
-        
+            heapq.heapify(self.opened)
         if (len(self.opened)):
             self.prev_current = self.current
             if mode == 'A*':
@@ -35,10 +33,12 @@ class Astar():
             elif mode =='DFS':
                 self.current = self.opened.pop(-1)
             else:
-                self.current = self.opened.pop(0)            
+                self.current = self.opened.pop(0)
             self.closed.append(self.current)
             if self.current.is_solution():
+                self.prev_current = self.current
                 return self.statistics()
+
             for neighbour in self.current.get_neighbours():
                 if neighbour.is_illegal():
                     continue
@@ -46,7 +46,6 @@ class Astar():
                 temporary_g = self.current.g + self.current.get_arc_cost()
 
                 if neighbour not in self.opened and neighbour not in self.closed:
-
                     self.evaluate(neighbour, self.current)
                     if mode == 'A*':
                         heapq.heappush(self.opened, neighbour)
@@ -57,6 +56,8 @@ class Astar():
                     if neighbour in self.closed:
                        self.propagate(neighbour)
             return self.current
+        else:
+            return "Failure"
 
     def evaluate(self, child, predecessor):
         '''
@@ -64,7 +65,7 @@ class Astar():
         '''
         child.predecessor = predecessor
         child.g = predecessor.g + child.get_arc_cost()
-        child.f = child.g + child.h
+        child.f = child.g + child.get_h()
 
     def propagate(self, predecessor):
         '''
@@ -74,7 +75,7 @@ class Astar():
             if (predecessor.g+1) < child.g:
                 child.predecessor = predecessor
                 child.g = predecessor.g + child.get_arc_cost()
-                child.f = child.g + child.h
+                child.f = child.g + child.get_h()
                 self.propagate(child)
 
     def clear(self):
@@ -84,8 +85,8 @@ class Astar():
         self.current = self.startnode
         self.opened = []
         self.closed = []
-        self.current.h = self.current.h
-        self.current.f = self.current.g + self.current.h
+        self.current.h = self.current.get_h()
+        self.current.f = self.current.g + self.current.get_h()
         self.opened.append(self.current)
 
     def statistics(self):
@@ -94,5 +95,5 @@ class Astar():
         while node.predecessor:
             count += 1
             node = node.predecessor
-        return "Mode: " + self.mode + " | Nodes generated: " + str(len(self.opened) + len(self.closed)) + " | Solution length: " + str(count)
+        return "Nodes generated: " + str(len(self.opened) + len(self.closed)) + " | Solution length: " + str(count)
 

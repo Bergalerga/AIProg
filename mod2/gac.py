@@ -25,7 +25,7 @@ class GAC:
 		while self.revise_queue:
 			node, constraint = self.revise_queue.pop(0)
 			if self.revise(node, constraint):
-				for constraint_edge in self.constraints[constraint]:
+				for constraint_edge in Constraints.get_edge(constraint):
 					if [constraint, constraint_edge] not in self.revise_queue:
 						self.revise_queue.append([constraint, constraint_edge])
 		return self.domains
@@ -35,6 +35,7 @@ class GAC:
 
 		'''
 		if len(self.domains[constraint]) == 1:
+			#Constraints.if_satisfies(node, constraint, domain)
 			if self.domains[constraint][0] in self.domains[node]:
 				self.domains[node].remove(self.domains[constraint][0])
 				return True

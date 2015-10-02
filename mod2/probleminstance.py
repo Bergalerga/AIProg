@@ -1,6 +1,7 @@
 from gac import GAC
 from astar import Astar
 from constraints import Constraints
+import random
 
 import copy
 
@@ -67,7 +68,6 @@ class Probleminstance():
 			if (len(self.domains[domain])) < minlen:
 				minlen = len(self.domains[domain])
 				current_domain = domain
-
 		for color in self.domains[current_domain]:
 			copy_domains = copy.deepcopy(self.domains)
 			copy_domains[current_domain] = [color]
