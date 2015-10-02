@@ -12,3 +12,6 @@ class Constraints():
             return True
         return False
 		
+	def makefunc (self, var_names , expression , envir = globals()):
+		args = ",".join(var_names)
+		return eval("(lambda " + args + ": " + expression + ")" , envir)

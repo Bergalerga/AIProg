@@ -30,17 +30,19 @@ class Board():
 			column = self.file_data[file_index].replace("\n", "").split(" ")
 			self.columns_info.append([int(x) for x in column])
 			file_index += 1
-		self.make_domain_dict()
 
-	def make_domain_dict(self):
-		'''
-
-		'''
 		self.domain_dict = {}
-		for node in range(self.row_length):
-			length, block_length, number_of_blocks = self.get_free_spaces(self.row_length, self.rows_info[node])
+		self.make_domain_dict(self.row_length, self.rows_info, 1)
+		self.make_domain_dict(self.column_length, self.columns_info, 0)
+
+	def make_domain_dict(self, size, info, num):
+		'''
+
+		'''
+		for node in range(size):
+			length, block_length, number_of_blocks = self.get_free_spaces(size, info[node])
 			free_spaces = length - block_length - (number_of_blocks -1)
-			blocks = self.rows_info[node]
+			blocks = info[node]
 			block_representation = list()
 
 			#Get representation of block
@@ -70,19 +72,12 @@ class Board():
 					for lists in zipitem:
 						if lists != None:
 							domain.extend(lists)
-				if node in self.domain_dict:
-					self.domain_dict[node].append(domain)
+				if (num, node) in self.domain_dict:
+					self.domain_dict[(num, node)].append(domain)
 				else:
-					self.domain_dict[node] = [domain]
-		print self.domain_dict
+					self.domain_dict[(num, node)] = [domain]
 
-	def get_array_representation(self, value, number_list):
-		'''
-
-		'''
-		pass
-
-	def make_constraints():
+	def make_constraints(self):
 		'''
 
 		'''
