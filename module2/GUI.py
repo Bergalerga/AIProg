@@ -119,9 +119,7 @@ class Controller:
 		self.board.K = int(number)
 		self.board.make_domain_dict()
 		self.reset()
-		c = Constraints()
-		setattr(Constraints, "constraints", self.board.constraint_dict)
-		self.vc = Probleminstance(self.board.domain_dict)
+		self.vc = Probleminstance(self.board.domain_dict, self.board.constraint_dict)
 		self.vc.initialize()
 		self.solve_loop()
 

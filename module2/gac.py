@@ -1,19 +1,18 @@
-from constraints import Constraints
 class GAC:
 
 
 	'''
 
 	'''
-	def initialize(self, domains = {}):
+	def initialize(self, domains = {}, constraints = None):
 		'''
 
 		'''
-		self.constraints = Constraints.constraints
+		self.constraints = constraints
 		self.domains = domains
 		self.revise_queue = list()
-		for node in self.constraints:
-			for constraint in self.constraints[node]:
+		for node in self.constraints.involved:
+			for constraint in self.constraints.involved[node]:
 				self.revise_queue.append([node, constraint])
 		
 		
@@ -41,14 +40,14 @@ class GAC:
 				return True
 		return False
 
-	def rerun(self, domains = {}, focal_node = None):
+	def rerun(self, domains = {}, focal_node = None, constraints = None):
 		'''
 
 		'''
 		self.revise_queue = list()
-		self.constraints = Constraints.constraints
+		self.constraints = constraints
 		self.domains = domains
-		for constraint in self.constraints[focal_node]:
+		for constraint in self.constraints.involved[focal_node]:
 			self.revise_queue.append([constraint, focal_node])
 		self.domain_filtering_loop()
 		return self.domains
