@@ -264,11 +264,9 @@ class Controller(object):
         '''
         current = self.astar.solve('DFS')
         if isinstance(current, Node):
-            self.gui.drawPath(self.astar.prev_current, 'pink')
             self.gui.drawPath(current, 'black')
             root.after(refreshTime, self.solveDFS)
         else:
-            self.gui.drawPath(self.astar.prev_current, 'pink')
             self.gui.drawPath(self.astar.current, 'black')
             print(current)
 

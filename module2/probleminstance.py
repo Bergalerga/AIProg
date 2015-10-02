@@ -11,7 +11,7 @@ class Probleminstance():
 	'''
 
 	'''
-	def __init__(self, domains = {}):
+	def __init__(self, domains, constraints):
 		'''
 
 		'''
@@ -20,10 +20,10 @@ class Probleminstance():
 		self.g = 0
 		self.f = 0
 		self.predecessor = None
-		self.neighbours = []
+		self.neighbours = []	
 
 		#GAC INFO
-		self.constraints = Constraints.constraints
+		self.constraints = Constraints(constraints)
 		self.domains = domains
 
 		#init gac

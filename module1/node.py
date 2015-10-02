@@ -46,14 +46,6 @@ class Node():
         '''
         return self.illegal
 
-    def distance_to_node(self, other):
-        '''
-        returns the distance from this node to the argument node.
-        '''
-        distance = math.fabs(self.x - other.x)
-        distance += math.fabs(self.y - other.y)
-        return int(distance) 
-
     def is_solution(self):
         '''
         Returns True if this node is the end node, Dalse otherwise.
