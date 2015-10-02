@@ -1,8 +1,8 @@
-from node import Node
-import Tkinter as tk
-from GUI import GUI
+from math import fabs
 
 class Board():
+	
+
 	'''
 	self.numberOfVertices = the number of vertices in the graph
 	self.numberOfEdges = the number of edges in the graph
@@ -11,10 +11,10 @@ class Board():
 	self.
 	self.edges = 2-dimensional list. For each edge, [0] denotes the index of the first vertice,
 	[1] denotes the second vertex.
-	self.nodes = list of node objects containing the edges.
+	self.variables = list of variable objects containing the edges.
 	'''
-
-	def __init__(self, file):
+	def __init__(self, file, K):
+		self.K = K
 		file = open(file, 'r')
 		self.file_data = file.readlines()
 		file.close()
@@ -29,56 +29,45 @@ class Board():
 		self.vertexes = list()
 		self.edges = list()
 		file_index = 1
+		self.max_width = 0
+		self.max_height = 0
 		while True:
-			vertice = self.file_data[file_index].replace("\n", "").split(" ")
+			vertice = self.file_data[file_index].rstrip("\n").rstrip(" ").split(" ")
 			if (len(vertice)) != 3:
 				break
 			self.vertexes.append([float(x) for x in vertice])
+			if fabs(float(vertice[1])) > self.max_width:
+				self.max_width = fabs(float(vertice[1]))
+			if fabs(float(vertice[2])) > self.max_height:
+				self.max_height = fabs(float(vertice[2]))
 			file_index += 1
 		while file_index < len(self.file_data):
-			edge = self.file_data[file_index].replace("n", "").split(" ")
+			edge = self.file_data[file_index].rstrip("\n").rstrip(" ").split(" ")
 			if (len(edge)) != 2:
 				break
 			self.edges.append([int(x) for x in edge])
 			file_index += 1
-		'''
-		print(self.number_of_vertices)
-		print(self.number_of_edges)
-		print(self.vertexes)
-		print(self.edges)
-		'''
-		self.nodes = list()
+		self.indexes = list()
 		for vertex in self.vertexes:
-			self.nodes.append(Node(int(vertex[0]), vertex[1], vertex[2], 4))
-		for edge in self.edges:
-			self.nodes[edge[0]].edges.append(self.nodes[edge[1]])
-			self.nodes[edge[1]].edges.append(self.nodes[edge[0]])
+			self.indexes.append(int(vertex[0]))
 
-		self.startNode = self.nodes[0]
+		self.make_domain_dict()
+		self.make_constraint_dict()
 
-	def distanceToEndNode(self, node=None):
-		'''
-		return len(node.domain)
-		'''
-		h = 0
-		for node in self.nodes:
-			h += len(node.domain)
-		return h
+	def make_domain_dict(self):
+		self.domain_dict = {}
+		for node in self.indexes:
+			self.domain_dict[node] = list()
+			for color in range(self.K):
+				self.domain_dict[node].append(color)
 
-	def getNeighbours(self, node):
-		return node.edges
 
-	def getArcCost(self, node):
-		return 1
+	def make_constraint_dict(self):
+		self.constraint_dict = {}
+		for node in self.indexes:
+			self.constraint_dict[node] = list()
+		for first_node, second_node in self.edges:
+			self.constraint_dict[first_node].append(second_node)
+			self.constraint_dict[second_node].append(first_node)
+		
 
-	def isSolution(self, node):
-		pass
-
-if __name__ == "__main__":
-	board = Board("1.txt")
-	board.parse_text_file()
-
-	root = tk.Tk()
-	gui = GUI(root, board)
-	gui.build()
-	root.mainloop()

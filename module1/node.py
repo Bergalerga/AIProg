@@ -23,23 +23,41 @@ class Node():
         self.endnode = endnode
 
     def get_arc_cost(self):
+        '''
+        the g value, always 1 in this scenario.
+        '''
         return 1
 
     def get_neighbours(self):
+        '''
+        returns the neighbours of the node.
+        '''
         return self.neighbours
 
     def get_h(self):
+        '''
+        returns the heuristic value.
+        '''
         return self.h
 
     def is_illegal(self):
+        '''
+        Returns True if this node cant be walked on, False otherwise
+        '''
         return self.illegal
 
     def distance_to_node(self, other):
+        '''
+        returns the distance from this node to the argument node.
+        '''
         distance = math.fabs(self.x - other.x)
         distance += math.fabs(self.y - other.y)
         return int(distance) 
 
     def is_solution(self):
+        '''
+        Returns True if this node is the end node, Dalse otherwise.
+        '''
         return self.endnode
     
     def __lt__(self, other):
@@ -53,7 +71,7 @@ class Node():
 
     def __eq__(self, other):
         '''
-        Compares the nodes on equality. Used to check whether a node is the endNode or not.
+        Compares the nodes on equality.
         '''
         return self.x == other.x and self.y == other.y
     

@@ -12,7 +12,7 @@ import math
 
 class Board():
     '''
-    Responsible for the board that the gui and astar needs.
+    Class responsible for representing the board. Used by the GUI to draw nodes and paths.
     '''
 
 
@@ -27,7 +27,8 @@ class Board():
 
     def parseTextFile(self, fileData):
         '''
-        Parses the textfile into a 2-dimensional list, containing nodes for each space in the board.
+        Parses the textfile into a 2-dimensional list, containing nodes for each space in the board. 
+        It also defines properties for each node.
         '''
         boardSize = fileData[0].rstrip().split(" ")
         self.rows = int(boardSize[0])
@@ -86,22 +87,10 @@ class Board():
                 if node.x <= elements[0] + (elements[2] - 1) and node.y <= elements[1] +(elements[3] - 1):                        return True
         return False
 
-    def distanceToEndNode(self, node):
-        '''
-        Return the manhattan distance from the current node to the end node.
-        '''
-
-    def getArcCost(self, node):
-        return 1
-
-    def isSolution(self, node):
-        if node == self.endNode:
-            return True
-        return False
 
 class GUI(tk.Frame):
     '''
-    Class responsible for drawing the user interface. Also contains rectangles.
+    Class responsible for handling the visualization.
     '''
     def __init__(self, parent):
         '''
@@ -116,7 +105,7 @@ class GUI(tk.Frame):
 
     def build(self, board):
         '''
-        Builds the GUI from a given board, and packing it in the end.
+        Builds the GUI from a given board.
         '''
         self.board = board
         #TODO
@@ -208,15 +197,15 @@ class GUI(tk.Frame):
 
 
 class Controller(object):
-    """
+    '''
     Responsible for handling events triggered by the user interface.
-    """
+    '''
 
 
     def __init__(self, gui):
-        """
-        Constructor, sets the instance of the user interface.
-        """
+        '''
+        Constructor, sets an instance of a user interface to operate on.
+        '''
         self.gui = gui
 
     
@@ -244,21 +233,20 @@ class Controller(object):
 
     def solveAstar(self):
         ''' 
-        Starts astar, and runs through in best-first mode
+        Starts astar, and runs through in best-first mode.
         '''
         current = self.astar.solve('A*')
         if isinstance(current, Node):
             self.gui.drawPath(current, 'black')
             root.after(refreshTime, self.solveAstar)
         else:
-            self.gui.drawPath(self.astar.prev_current, 'pink')
             self.gui.drawPath(self.astar.current, 'black')
             print(current)
 
 
     def solveBFS(self):
         '''
-        Starts astar, and rund through in breadth-first mode
+        Starts astar, and runs through in breadth-first mode
         '''
         current = self.astar.solve('BFS')
         if isinstance(current, Node):
@@ -286,7 +274,7 @@ class Controller(object):
 
     def openBoard(self):
         '''
-        Opens the file system, allowing you to select a board. It then builds a board based on whats selected.
+        Opens the file system, allowing you to select a board from a text file. It then builds a board based on what is selected.
         '''
         filename = askopenfilename(parent=root)
         self.board = Board(filename)    
@@ -297,7 +285,8 @@ class Controller(object):
 
 if __name__ == "__main__":
     '''
-    Initializes TkInter, and passes it to the gui, and initializes the gui's menu and controller. It also handles command line input.
+    Initializes TkInter, and passes it to the gui, and initializes the gui's menu and controller. 
+    Sets an iteration delay of Astar, if defined from command line input. Iteration delay defaults to 50 ms.
     '''
     global refreshTime
     refreshTime = 50

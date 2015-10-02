@@ -1,4 +1,3 @@
-#from node import Node
 import heapq
 
 class Astar():
@@ -9,7 +8,7 @@ class Astar():
 
     def __init__(self, node):
         '''
-        Initializes the required components used by the algorithm, and a board to work with.
+        Initializes the required lists, as well as a node/problem instance search to start the search with
         '''
         self.startnode = node
         self.current = node
@@ -21,8 +20,8 @@ class Astar():
 
     def solve(self, mode):
         '''
-        This is the agenda loop. It will return the next node chosen. Has a parameter mode, which
-        defines which algorithm to perform.
+        This is the agenda loop. It will return the next node chosen. Has a parameter "mode", which
+        defines which algorithm to search with.
         '''
         if mode == 'A*':
             heapq.heapify(self.opened)
@@ -90,6 +89,9 @@ class Astar():
         self.opened.append(self.current)
 
     def statistics(self):
+        '''
+        Returns a string which displays statistics. This is called when the algorithm is finished.
+        '''
         count = 0
         node = self.current
         while node.predecessor:

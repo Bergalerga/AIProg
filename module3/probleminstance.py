@@ -1,4 +1,4 @@
- rom gac import GAC
+from gac import GAC
 from astar import Astar
 from constraints import Constraints
 
@@ -26,7 +26,7 @@ class Probleminstance():
 		#init gac
 		self.gac = GAC()
 
-		def initialize(self):
+	def initialize(self):
 		'''
 
 		'''
@@ -56,7 +56,22 @@ class Probleminstance():
 		'''
 
 		'''
-		pass
+		minlen = float("inf")
+		current_domain = None
+		neighbours = list()
+		for domain in self.domains:
+			if len(self.domains[domain]) == 1:
+				continue
+			if (len(self.domains[domain])) < minlen:
+				minlen = len(self.domains[domain])
+				current_domain = domain
+		for variation in self.domains[current_domain]:
+			copy_domains = copy.deepcopy(self.domains)
+			copy_domains[current_domain] = [variation]
+			copy_domains = self.gac.rerun(copy_domains, current_domain)
+			pi = probleminstance(copy_domains)
+		self.neighbours = neighbours
+		return neighbours
 
 	def get_arc_cost(self):
 		'''
@@ -68,13 +83,20 @@ class Probleminstance():
 		'''
 
 		'''
-		pass
+		h = 0
+		for domain in self.domains:
+			h + = len(self.domains[domain])
+		self.h = h
+		return h
 
 	def is_illegal(self):
 		'''
 
 		'''
-		pass
+		for domain in self.domains:
+			if not constraints.satisfies(self.domains[domain])
+				return False
+		return True
 
 	def __lt__(self, other):
 		'''
