@@ -24,7 +24,7 @@ class GAC:
 		while self.revise_queue:
 			node, constraint = self.revise_queue.pop(0)
 			if self.revise(node, constraint):
-				for constraint_edge in Constraints.get_edge(constraint):
+				for constraint_edge in self.constraints.involved[constraint]:
 					if [constraint, constraint_edge] not in self.revise_queue:
 						self.revise_queue.append([constraint, constraint_edge])
 		return self.domains
@@ -45,8 +45,8 @@ class GAC:
 
 		'''
 		self.revise_queue = list()
-		self.constraints = constraints
 		self.domains = domains
+		self.constraints = constraints
 		for constraint in self.constraints.involved[focal_node]:
 			self.revise_queue.append([constraint, focal_node])
 		self.domain_filtering_loop()

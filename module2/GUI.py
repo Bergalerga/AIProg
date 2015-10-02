@@ -117,8 +117,9 @@ class Controller:
 		'''
 		self.k = int(number)
 		self.board.K = int(number)
-		self.board.make_domain_dict()
 		self.reset()
+		self.board.make_domain_dict()
+		self.board.make_constraint_dict()
 		self.vc = Probleminstance(self.board.domain_dict, self.board.constraint_dict)
 		self.vc.initialize()
 		self.solve_loop()
@@ -135,9 +136,6 @@ class Controller:
 			root.after(refresh_time, self.solve_loop)
 		else:
 			self.color_vertexes(prev_current)
-			print(prev_current.domains)
-			print("---------")
-			print(prev_current.constraints)
 			print(current)
 
 	def color_vertexes(self, current):
