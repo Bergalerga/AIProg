@@ -11,7 +11,7 @@ class Probleminstance():
 	'''
 
 	'''
-	def __init__(self, domains, constraints):
+	def __init__(self, domains, constraint_list):
 		'''
 
 		'''
@@ -23,7 +23,7 @@ class Probleminstance():
 		self.neighbours = []	
 
 		#GAC INFO
-		self.constraints = Constraints(constraints)
+		self.constraints = Constraints("x!=y", ["x", "y"], constraint_list)
 		self.domains = domains
 
 		#init gac
@@ -34,7 +34,7 @@ class Probleminstance():
 
 		'''
 
-		self.gac.initialize(self.domains)
+		self.gac.initialize(self.domains, self.constraints)
 		self.domains = self.gac.domain_filtering_loop()
 		self.astar = Astar(self)
 		
@@ -71,8 +71,8 @@ class Probleminstance():
 		for color in self.domains[current_domain]:
 			copy_domains = copy.deepcopy(self.domains)
 			copy_domains[current_domain] = [color]
-			copy_domains = self.gac.rerun(copy_domains, current_domain)
-			pi = Probleminstance(copy_domains)
+			copy_domains = self.gac.rerun(copy_domains, current_domain, self.constraints)
+			pi = Probleminstance(copy_domains, self.constraints.involved)
 			neighbours.append(pi)
 		self.neighbours = neighbours
 		return neighbours
@@ -97,8 +97,8 @@ class Probleminstance():
 		'''
 
 		'''
-		for node in self.constraints:
-			for edge in self.constraints[node]:
+		for node in self.constraints.involved:
+			for edge in self.constraints.involved[node]:
 				if (len(self.domains[node]) == 1) and (len(self.domains[edge]) == 1) and (self.domains[node][0] == self.domains[edge][0]):
 					return True
 		return False
