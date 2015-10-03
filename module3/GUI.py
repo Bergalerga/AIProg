@@ -28,8 +28,8 @@ class GUI(tk.Frame):
 		Builds a graphial representation of a given board.
 		'''
 		self.board = board
-		self.rows = self.board.row_length
-		self.columns = self.board.column_length
+		self.rows = self.board.number_of_columns
+		self.columns = self.board.number_of_rows
 		if self.rows > self.columns:
 			self.square_size = (self.width / self.rows) / 1.5
 		else:
@@ -137,6 +137,7 @@ class Controller():
 		self.problem = Probleminstance(self.board.domain_dict, self.board.constraint_dict)
 		self.problem.initialize()
 		if self.problem.is_solution():
+			print("derp")
 			self.color_vertexes(self.problem)
 		self.solve_loop()
 
@@ -150,7 +151,6 @@ class Controller():
 		if isinstance(current, Probleminstance):
 			root.after(refresh_time, self.solve_loop)
 		else:
-			print(prev_current)
 			self.color_vertexes(prev_current)
 
 	def color_vertexes(self, current):

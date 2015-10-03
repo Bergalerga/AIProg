@@ -49,7 +49,6 @@ class Probleminstance():
 		for domain in self.domains:
 			if len(self.domains[domain]) != 1:
 				return False
-		print self.domains
 		return True
 
 	def get_neighbours(self):
@@ -70,6 +69,7 @@ class Probleminstance():
 			copy_domains[current_domain] = [variation]
 			copy_domains = self.gac.rerun(copy_domains, current_domain, self.constraints)
 			pi = Probleminstance(copy_domains, self.constraints.involved)
+			neighbours.append(pi)
 		self.neighbours = neighbours
 		return neighbours
 
@@ -97,6 +97,7 @@ class Probleminstance():
 			for constraint_node in self.constraints.involved[node]:
 				for x_domain in self.domains[node]:
 					for y_domain in self.domains[constraint_node]:
+						print(x_domain, y_domain)
 						if not self.constraints.expression[x_domain, y_domain]:
 							return False
 		return True
