@@ -30,7 +30,6 @@ class Probleminstance():
 		'''
 
 		'''
-
 		self.gac.initialize(self.domains, self.constraints)
 		self.domains = self.gac.domain_filtering_loop()
 		self.astar = Astar(self)

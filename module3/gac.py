@@ -23,6 +23,7 @@ class GAC:
 				for edges in self.constraints.involved[node]:
 					if [edges, node] not in self.revise_queue:
 						self.revise_queue.append([edges, node])
+						
 
 		return self.domains
 
@@ -47,6 +48,7 @@ class GAC:
 		'''
 
 		'''
+		print "rerun"
 		self.revise_queue = list()
 		self.domains = domains
 		self.constraints = constraints

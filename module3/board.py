@@ -16,8 +16,8 @@ class Board():
 
 		'''
 		dimensions = self.file_data[0].replace("\n", "").split(" ")
-		self.row_length = int(dimensions[0])
-		self.column_length = int(dimensions[1])
+		self.number_of_rows = int(dimensions[1])
+		self.number_of_columns = int(dimensions[0])
 		self.rows_info = list()
 		self.columns_info = list()
 		file_index = 1
@@ -25,26 +25,28 @@ class Board():
 			row = self.file_data[file_index].replace("\n", "").split(" ")
 			self.rows_info.append([int(x) for x in row])
 			file_index += 1
-			if file_index > self.row_length:
+			if file_index > self.number_of_rows:
 				break
 		while file_index < len(self.file_data):
 			column = self.file_data[file_index].replace("\n", "").split(" ")
 			self.columns_info.append([int(x) for x in column])
 			file_index += 1
 
+
 		self.rows_info.reverse()
-		row_dict = self.make_domain_dict(self.row_length, self.rows_info, 1)
-		column_dict = self.make_domain_dict(self.column_length, self.columns_info, 0)
+
+		column_dict = self.make_domain_dict(self.number_of_rows, self.number_of_columns, self.columns_info, 0)
+		row_dict = self.make_domain_dict(self.number_of_columns, self.number_of_rows, self.rows_info, 1)
 		self.domain_dict = dict(row_dict.items() + column_dict.items())
 		self.constraint_dict = {}
 		self.make_constraint_dict(row_dict, column_dict)
 
-	def make_domain_dict(self, size, info, num):
+	def make_domain_dict(self, size, elements, info, num):
 		'''
 
 		'''
 		temp_domain_dict = {}
-		for node in range(size):
+		for node in range(elements):
 			length, block_length, number_of_blocks = self.get_free_spaces(size, info[node])
 			free_spaces = length - block_length - (number_of_blocks -1)
 			blocks = info[node]
@@ -64,8 +66,6 @@ class Board():
 
 			
 			for space_placement in self.space_placement(free_spaces, number_of_blocks + 1):
-
-
 				spaces_representation = list()
 				for spaces in space_placement:
 					space_repr = [0]*spaces
@@ -82,6 +82,7 @@ class Board():
 				else:
 					temp_domain_dict[(num, node)] = [domain]
 		return temp_domain_dict
+		
 
 	def make_constraint_dict(self, row_dict, column_dict):
 		'''
@@ -120,10 +121,9 @@ class Board():
 
 
 if __name__ == "__main__":
-	board = Board("scenario6.txt")
+	board = Board("scenario3.txt")
 	board.parse_text_file()
 	pr = Probleminstance(board.domain_dict, board.constraint_dict)
-
 	pr.initialize()
 	while isinstance(pr, Probleminstance):
 		pr = pr.solve()
