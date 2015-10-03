@@ -34,7 +34,6 @@ class Board():
 		self.domain_dict = {}
 		self.make_domain_dict(self.row_length, self.rows_info, 1)
 		self.make_domain_dict(self.column_length, self.columns_info, 0)
-		print(self.domain_dict)
 
 	def make_domain_dict(self, size, info, num):
 		'''
