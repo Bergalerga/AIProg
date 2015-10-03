@@ -34,8 +34,8 @@ class GAC:
 		for x_domain in self.domains[node]:
 			satisfies = 0
 			for y_domain in self.domains[constraint_node]:
-				x_index = constraint_node[1]
-				y_index = node[1]
+				x_index = node[1]
+				y_index = constraint_node[1]
 				if self.constraints.expression(x_domain, y_domain, x_index, y_index):
 					satisfies += 1
 			if satisfies == 0:

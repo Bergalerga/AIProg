@@ -120,7 +120,7 @@ class Board():
 
 
 if __name__ == "__main__":
-	board = Board("tale.txt")
+	board = Board("scenario6.txt")
 	board.parse_text_file()
 	pr = Probleminstance(board.domain_dict, board.constraint_dict)
 

@@ -50,6 +50,7 @@ class Probleminstance():
 		for domain in self.domains:
 			if len(self.domains[domain]) != 1:
 				return False
+		print self.domains
 		return True
 
 	def get_neighbours(self):
