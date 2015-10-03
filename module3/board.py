@@ -1,4 +1,5 @@
 from itertools import combinations, izip_longest
+from probleminstance import Probleminstance
 
 class Board():
 	'''
@@ -30,16 +31,18 @@ class Board():
 			column = self.file_data[file_index].replace("\n", "").split(" ")
 			self.columns_info.append([int(x) for x in column])
 			file_index += 1
-
-		self.domain_dict = {}
-		self.make_domain_dict(self.row_length, self.rows_info, 1)
-		self.make_domain_dict(self.column_length, self.columns_info, 0)
-		print(self.domain_dict)
+		self.rows_info.reverse()
+		row_dict = self.make_domain_dict(self.row_length, self.rows_info, 1)
+		column_dict = self.make_domain_dict(self.column_length, self.columns_info, 0)
+		self.domain_dict = dict(row_dict.items() + column_dict.items())
+		self.constraint_dict = {}
+		self.make_constraint_dict(row_dict, column_dict)
 
 	def make_domain_dict(self, size, info, num):
 		'''
 
 		'''
+		temp_domain_dict = {}
 		for node in range(size):
 			length, block_length, number_of_blocks = self.get_free_spaces(size, info[node])
 			free_spaces = length - block_length - (number_of_blocks -1)
@@ -73,16 +76,28 @@ class Board():
 					for lists in zipitem:
 						if lists != None:
 							domain.extend(lists)
-				if (num, node) in self.domain_dict:
-					self.domain_dict[(num, node)].append(domain)
+				if (num, node) in temp_domain_dict:
+					temp_domain_dict[(num, node)].append(domain)
 				else:
-					self.domain_dict[(num, node)] = [domain]
+					temp_domain_dict[(num, node)] = [domain]
+		return temp_domain_dict
 
-	def make_constraints(self):
+	def make_constraint_dict(self, row_dict, column_dict):
 		'''
 
 		'''
-		pass
+		for row_node in row_dict:
+			for column_node in column_dict:
+				if row_node in self.constraint_dict:
+					self.constraint_dict[row_node].append(column_node)
+				else:
+					self.constraint_dict[row_node] = [column_node]
+				if column_node in self.constraint_dict:
+					self.constraint_dict[column_node].append(row_node)
+				else:
+					self.constraint_dict[column_node] = [row_node]
+
+
 
 	def get_free_spaces(self, length, block_array):
 		'''
@@ -104,5 +119,10 @@ class Board():
 
 
 if __name__ == "__main__":
-	board = Board("1.txt")
+	board = Board("tale.txt")
 	board.parse_text_file()
+	pr = Probleminstance(board.domain_dict, board.constraint_dict)
+
+	pr.initialize()
+	while isinstance(pr, Probleminstance):
+		pr = pr.solve()

@@ -8,7 +8,7 @@ class Probleminstance():
  	'''
 
  	'''
- 	def __init__(self, domains = {} ):
+ 	def __init__(self, domains, constraint_list):
  		'''
 
  		'''
@@ -20,7 +20,7 @@ class Probleminstance():
 		self.neighbours = []
 
 		#GAC INFO
-		self.constraints = Constraints.constraints
+		self.constraints = Constraints("column[y_index] == row[x_index]", ["column", "row", "x_index", "y_index"], constraint_list)
 		self.domains = domains
 
 		#init gac
@@ -31,7 +31,7 @@ class Probleminstance():
 
 		'''
 
-		self.gac.initialize(self.domains)
+		self.gac.initialize(self.domains, self.constraints)
 		self.domains = self.gac.domain_filtering_loop()
 		self.astar = Astar(self)
 		
@@ -68,8 +68,8 @@ class Probleminstance():
 		for variation in self.domains[current_domain]:
 			copy_domains = copy.deepcopy(self.domains)
 			copy_domains[current_domain] = [variation]
-			copy_domains = self.gac.rerun(copy_domains, current_domain)
-			pi = probleminstance(copy_domains)
+			copy_domains = self.gac.rerun(copy_domains, current_domain, self.constraints)
+			pi = Probleminstance(copy_domains, self.constraints.involved)
 		self.neighbours = neighbours
 		return neighbours
 
@@ -85,7 +85,7 @@ class Probleminstance():
 		'''
 		h = 0
 		for domain in self.domains:
-			h + = len(self.domains[domain])
+			h += len(self.domains[domain])
 		self.h = h
 		return h
 
@@ -93,9 +93,12 @@ class Probleminstance():
 		'''
 
 		'''
-		for domain in self.domains:
-			if not constraints.satisfies(self.domains[domain])
-				return False
+		for node in self.domains:
+			for constraint_node in self.constraints.involved[node]:
+				for x_domain in self.domains[node]:
+					for y_domain in self.domains[constraint_node]:
+						if not self.constraints.expression[x_domain, y_domain]:
+							return False
 		return True
 
 	def __lt__(self, other):
