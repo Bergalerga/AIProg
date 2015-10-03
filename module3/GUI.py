@@ -6,40 +6,77 @@ import sys
 
 class GUI(tk.Frame):
 	'''
-
+	Class responsible for drawing the graphical interface, and the steps of the algorithm.
 	'''
 
 
 	def __init__(self, parent):
 		'''
-
+		Initializes tkinter, and the guis controller.
 		'''
 		tk.Frame.__init__(self, parent)
 		self.parent = parent
-		self.canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0, width=600, height=600)
+		self.width = 600
+		self.height = 600
+		self.canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0, width=self.width, height=self.height)
 		self.controller = Controller(self)
 		self.id_list = list()
 
 	def build(self, board):
 		'''
-
+		Builds a graphial representation of a given board.
 		'''
 		self.board = board
-		self.square_size = 15
 		self.rows = self.board.row_length
 		self.columns = self.board.column_length
-		for row in range(self.rows):
+		if self.rows > self.columns:
+			self.square_size = (self.width / self.rows) - 20
+		else:
+			self.square_size = (self.height / self.columns) - 20
+		for row in reversed(range(self.rows)):
 			for column in range(self.columns):
 				x1 = row * self.square_size
 				y1 = column * self.square_size
 				x2 = row * self.square_size + self.square_size
 				y2 = column * self.square_size + self.square_size
 				self.canvas.create_rectangle(x1, y1, x2, y2)
+		
+		draw_start_x = (self.square_size * self.rows) + self.square_size
+		draw_start_y = (self.square_size * self.columns) + self.square_size
+		x_count = 0
+		y_count = self.square_size / 2
+		for row in reversed(self.board.rows_info):
+			for num in row:
+				self.canvas.create_text(draw_start_x + x_count, y_count, text=str(num))
+				x_count += 20
+			y_count += self.square_size
+			x_count = 0
+
+		x_count = self.square_size / 2
+		y_count = 0
+		for column in self.board.columns_info:
+			for num in column:
+				print(num)
+				self.canvas.create_text(x_count, draw_start_y + y_count, text=str(num))
+				y_count += 20
+			y_count = 0
+			x_count += self.square_size
+		
 		self.canvas.pack()
+
+	def draw_square(self, x, y, color = 'blue'):
+		'''
+		Draws a square from its x and y coordinates, with the given color.
+		'''
+		x1 = x * self.square_size
+		y1 = y * self.square_size
+		x2 = x1 + self.square_size
+		y2 = y1 + self.square_size
+		self.canvas.create_rectangle(x1, y1, x2, y2, fill=color)
 
 	def make_menu(self):
 		'''
-
+		Creates a menu, allowing you to select a board.
 		'''
 		menu_bar = tk.Menu(self.parent)
 		board_menu = tk.Menu(menu_bar, tearoff=0)
@@ -48,31 +85,28 @@ class GUI(tk.Frame):
 
 		root.config(menu=menu_bar)
 
-	def color_node(self):
-		'''
-
-		'''
-		pass
-
 	def clear(self):
+		'''
+		Clears the canvas by deleting all of its elements.
+		'''
 		self.canvas.delete("all")
 
 
 class Controller():
 	'''
-
+	Class responsible for controlling the algorithm, and updates the gui.
 	'''
 
 
 	def __init__(self, gui):
 		'''
-
+		Initializes the controller with a gui
 		'''
 		self.gui = gui
 
 	def open_board(self):
 		'''
-
+		Opens the board selected from the file menu, and prepares for a new run.
 		'''
 		filename = askopenfilename(parent=root)
 		self.board = Board(filename)
@@ -82,14 +116,14 @@ class Controller():
 
 	def reset(self):
 		'''
-
+		Resets the gui and builds a new board.
 		'''
 		self.gui.clear()
 		self.gui.build(self.board)
 
 	def solve(self):
 		'''
-
+		Starts the algorithm.
 		'''
 		pass
 

@@ -31,6 +31,7 @@ class Board():
 			column = self.file_data[file_index].replace("\n", "").split(" ")
 			self.columns_info.append([int(x) for x in column])
 			file_index += 1
+
 		self.rows_info.reverse()
 		row_dict = self.make_domain_dict(self.row_length, self.rows_info, 1)
 		column_dict = self.make_domain_dict(self.column_length, self.columns_info, 0)
