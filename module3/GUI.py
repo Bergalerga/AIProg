@@ -1,4 +1,5 @@
 from board import Board
+from probleminstance import Probleminstance
 
 import Tkinter as tk
 from tkFileDialog import askopenfilename
@@ -30,9 +31,9 @@ class GUI(tk.Frame):
 		self.rows = self.board.row_length
 		self.columns = self.board.column_length
 		if self.rows > self.columns:
-			self.square_size = (self.width / self.rows) - 20
+			self.square_size = (self.width / self.rows) / 1.5
 		else:
-			self.square_size = (self.height / self.columns) - 20
+			self.square_size = (self.height / self.columns) / 1.5
 		for row in reversed(range(self.rows)):
 			for column in range(self.columns):
 				x1 = row * self.square_size
@@ -45,7 +46,7 @@ class GUI(tk.Frame):
 		draw_start_y = (self.square_size * self.columns) + self.square_size
 		x_count = 0
 		y_count = self.square_size / 2
-		for row in reversed(self.board.rows_info):
+		for row in self.board.rows_info:
 			for num in row:
 				self.canvas.create_text(draw_start_x + x_count, y_count, text=str(num))
 				x_count += 20
@@ -56,7 +57,6 @@ class GUI(tk.Frame):
 		y_count = 0
 		for column in self.board.columns_info:
 			for num in column:
-				print(num)
 				self.canvas.create_text(x_count, draw_start_y + y_count, text=str(num))
 				y_count += 20
 			y_count = 0
@@ -64,7 +64,7 @@ class GUI(tk.Frame):
 		
 		self.canvas.pack()
 
-	def draw_square(self, x, y, color = 'blue'):
+	def draw_square(self, x, y, num):
 		'''
 		Draws a square from its x and y coordinates, with the given color.
 		'''
@@ -72,7 +72,10 @@ class GUI(tk.Frame):
 		y1 = y * self.square_size
 		x2 = x1 + self.square_size
 		y2 = y1 + self.square_size
-		self.canvas.create_rectangle(x1, y1, x2, y2, fill=color)
+		if num == 1:
+			self.canvas.create_rectangle(x1, y1, x2, y2, fill='blue')
+		else:
+			self.canvas.create_rectangle(x1, y1, x2, y2, fill='white')			
 
 	def make_menu(self):
 		'''
@@ -82,6 +85,10 @@ class GUI(tk.Frame):
 		board_menu = tk.Menu(menu_bar, tearoff=0)
 		board_menu.add_command(label='Open file', command=self.controller.open_board)
 		menu_bar.add_cascade(label='Board', menu=board_menu)
+
+		go_menu = tk.Menu(menu_bar, tearoff=0)
+		go_menu.add_command(label='Go', command=self.controller.solve)
+		menu_bar.add_cascade(label='Run', menu=go_menu)
 
 		root.config(menu=menu_bar)
 
@@ -120,12 +127,40 @@ class Controller():
 		'''
 		self.gui.clear()
 		self.gui.build(self.board)
+		self.board.parse_text_file()
 
 	def solve(self):
 		'''
 		Starts the algorithm.
 		'''
-		pass
+		self.reset()
+		self.problem = Probleminstance(self.board.domain_dict, self.board.constraint_dict)
+		self.problem.initialize()
+		if self.problem.is_solution():
+			self.color_vertexes(self.problem)
+		self.solve_loop()
+
+	def solve_loop(self):
+		'''
+		Iteratively solves the problem, printing steps each time.
+		'''
+		solutions = self.problem.solve()
+		current = solutions[0]
+		prev_current = solutions[1]
+		if isinstance(current, Probleminstance):
+			root.after(refresh_time, self.solve_loop)
+		else:
+			print(prev_current)
+			self.color_vertexes(prev_current)
+
+	def color_vertexes(self, current):
+		'''
+		Colors all of the vertexes.
+		'''
+		for domain in current.domains:
+			if len(current.domains[domain]) == 1 and domain[0] == 0:
+				for index in range(len(current.domains[domain][0])):
+					self.gui.draw_square(domain[1], index, current.domains[domain][0][index])
 
 if __name__ == "__main__":
 	global refresh_time
