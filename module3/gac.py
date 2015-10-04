@@ -48,11 +48,9 @@ class GAC:
 		'''
 
 		'''
-		print "rerun"
 		self.revise_queue = list()
 		self.domains = domains
 		self.constraints = constraints
 		for constraint_node in self.constraints.involved[focal_node]:
 			self.revise_queue.append([constraint_node, focal_node])
-		self.domain_filtering_loop()
-		return self.domains
+		return self.domain_filtering_loop()

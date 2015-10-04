@@ -94,13 +94,19 @@ class Probleminstance():
 
 		'''
 		for node in self.domains:
+			if self.domains[node] == []:
+				return True
 			for constraint_node in self.constraints.involved[node]:
+				legal = False
 				for x_domain in self.domains[node]:
 					for y_domain in self.domains[constraint_node]:
-						print(x_domain, y_domain)
-						if not self.constraints.expression[x_domain, y_domain]:
-							return False
-		return True
+						x_index = node[1]
+						y_index = constraint_node[1]
+						if self.constraints.expression(x_domain, y_domain, x_index, y_index):
+							legal = True
+				if legal == False:
+					return True
+		return False
 
 	def __lt__(self, other):
 		'''
