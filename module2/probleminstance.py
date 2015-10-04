@@ -13,7 +13,7 @@ class Probleminstance():
 	'''
 	def __init__(self, domains, constraint_list):
 		'''
-
+		Initializes the values used by astar and gac.
 		'''
 		#A* INFO
 		self.h = 0
@@ -31,7 +31,7 @@ class Probleminstance():
 
 	def initialize(self):
 		'''
-
+		Initializes by running the first domain filtering loop.
 		'''
 
 		self.gac.initialize(self.domains, self.constraints)
@@ -41,14 +41,14 @@ class Probleminstance():
 
 	def solve(self):
 		'''
-
+		Runs one iteration of the astar algorithm
 		'''
 		self.current = self.astar.solve("A*")
 		return [self.current, self.astar.prev_current]
 
 	def is_solution(self):
 		'''
-
+		Returns True if this is a solution state, False if not.
 		'''
 		for domain in self.domains:
 			if len(self.domains[domain]) != 1:
@@ -57,7 +57,7 @@ class Probleminstance():
 
 	def get_neighbours(self):
 		'''
-
+		Returns the neighbours of this node. 
 		'''
 		minlen = float("inf")
 		current_domain = None
@@ -79,13 +79,13 @@ class Probleminstance():
 
 	def get_arc_cost(self):
 		'''
-
+		Returns the cost of moving from this node.
 		'''
 		return 1
 
 	def get_h(self):
 		'''
-
+		Sets and returns the h value
 		'''
 		h = 0
 		for domain in self.domains:
@@ -95,7 +95,7 @@ class Probleminstance():
 
 	def is_illegal(self):
 		'''
-
+		Returns True if any constraints are broken in this state, False otherwise.
 		'''
 		for node in self.constraints.involved:
 			for edge in self.constraints.involved[node]:
@@ -105,7 +105,8 @@ class Probleminstance():
 
 	def __lt__(self, other):
 		'''
-
+		Less than comparison method. Compares on f-value primarily, h value
+		if f are equal.
 		'''
 		if self.f == other.f:
 			return self.h < other.h
@@ -113,12 +114,12 @@ class Probleminstance():
 
 	def __eq__(self, other):
 		'''
-
+		Equality comparison method. Compares on the equality of domains.
 		'''
 		return self.domains == other.domains
 
 	def __str__(self):
 		'''
-
+		Print method for this object, returns its domains.
 		'''
 		return str(self.domains)

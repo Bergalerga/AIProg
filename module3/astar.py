@@ -40,7 +40,6 @@ class Astar():
 
             for neighbour in self.current.get_neighbours():
                 if neighbour.is_illegal():
-                    print(neighbour.domains)
                     continue
                 temporary_g = self.current.g + self.current.get_arc_cost()
 

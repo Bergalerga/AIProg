@@ -22,7 +22,7 @@ class GUI(tk.Frame):
 
 	def build(self, board):
 		'''
-
+		Builds the gui from a given board.
 		'''
 		self.board = board
 		self.middle_x = self.canvas.winfo_reqwidth() / 2
@@ -83,11 +83,11 @@ class GUI(tk.Frame):
 class Controller:
 
 	'''
-
+	Class responsible for initializing a run, and drawing to the gui.
 	'''
 	def __init__(self, gui):
 		'''
-
+		Initializes with a gui.
 		'''
 		self.gui = gui
 		self.K = 2
@@ -95,7 +95,7 @@ class Controller:
 
 	def reset(self):
 		'''
-
+		Resets the gui, preparing it for a new run.
 		'''
 		self.gui.clear()
 		self.gui.build(self.board)
@@ -103,7 +103,7 @@ class Controller:
 
 	def open_board(self):
 		'''
-
+		Opens a board when it is selected in the board menu.
 		'''
 		filename = askopenfilename(parent=root)
 		self.board = Board(filename, self.K)
@@ -113,7 +113,7 @@ class Controller:
 
 	def solve(self, number):
 		'''
-
+		Initializes a solve run, and calls the loop to solve.
 		'''
 		self.k = int(number)
 		self.board.K = int(number)
@@ -122,11 +122,15 @@ class Controller:
 		self.board.make_constraint_dict()
 		self.vc = Probleminstance(self.board.domain_dict, self.board.constraint_dict)
 		self.vc.initialize()
+		if self.vc.is_solution():
+			self.color_vertexes(self.vc)
+			return
 		self.solve_loop()
 
 	def solve_loop(self):
 		'''
-
+		Recursively calls one step of the algorithm at a time, coloring
+		the gui for each time.
 		'''
 		solutions = self.vc.solve()
 		current = solutions[0]
@@ -138,9 +142,10 @@ class Controller:
 			self.color_vertexes(prev_current)
 			print(current)
 
+
 	def color_vertexes(self, current):
 		'''
-
+		Colors the vertexes that has a set color.
 		'''
 		for vertex in current.domains:
 			if len(current.domains[vertex]) == 1:

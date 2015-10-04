@@ -14,6 +14,9 @@ class Board():
 	self.variables = list of variable objects containing the edges.
 	'''
 	def __init__(self, file, K):
+		'''
+		Initializes by reading a file, and setting the K value.
+		'''
 		self.K = K
 		file = open(file, 'r')
 		self.file_data = file.readlines()
@@ -21,7 +24,7 @@ class Board():
 
 	def parse_text_file(self):
 		'''
-
+		Parses the text file, and placing values in data structures.
 		'''
 		vertices_and_edges = self.file_data[0].replace("\n", "").split(" ")
 		self.number_of_vertices = int(vertices_and_edges[0])
@@ -55,6 +58,9 @@ class Board():
 		self.make_constraint_dict()
 
 	def make_domain_dict(self):
+		'''
+		Creates a dictionary of domains, based on the board.
+		'''
 		self.domain_dict = {}
 		for node in self.indexes:
 			self.domain_dict[node] = list()
@@ -63,6 +69,9 @@ class Board():
 
 
 	def make_constraint_dict(self):
+		'''
+		Creates the constraints as a dictionary, based on the board.
+		'''
 		self.constraint_dict = {}
 		for node in self.indexes:
 			self.constraint_dict[node] = list()

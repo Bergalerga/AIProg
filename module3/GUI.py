@@ -137,7 +137,6 @@ class Controller():
 		self.problem = Probleminstance(self.board.domain_dict, self.board.constraint_dict)
 		self.problem.initialize()
 		if self.problem.is_solution():
-			print("derp")
 			self.color_vertexes(self.problem)
 		self.solve_loop()
 
