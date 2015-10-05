@@ -10,6 +10,7 @@ class Astar():
         '''
         Initializes the required lists, as well as a node/problem instance search to start the search with
         '''
+        self.opened_count = 0
         self.startnode = node
         self.current = node
         self.opened = []
@@ -33,6 +34,7 @@ class Astar():
                 self.current = self.opened.pop(-1)
             else:
                 self.current = self.opened.pop(0)
+            self.opened_count += 1
             self.closed.append(self.current)
             if self.current.is_solution():
                 self.prev_current = self.current
@@ -56,7 +58,7 @@ class Astar():
                        self.propagate(neighbour)
             return self.current
         else:
-            return "Failure"
+            return self.statistics()
 
     def evaluate(self, child, predecessor):
         '''
@@ -87,15 +89,16 @@ class Astar():
         self.current.h = self.current.get_h()
         self.current.f = self.current.g + self.current.get_h()
         self.opened.append(self.current)
+        self.opened_count = 0
 
     def statistics(self):
         '''
-        Returns a string which displays statistics. This is called when the algorithm is finished.
+        Returns a string which displays statistics. This is called when the algorithm is finished or has failed.
         '''
         count = 0
         node = self.current
         while node.predecessor:
             count += 1
             node = node.predecessor
-        return "Nodes generated: " + str(len(self.opened) + len(self.closed)) + " | Solution length: " + str(count)
+        return "Nodes generated: " + str(len(self.opened) + len(self.closed)) + " | Nodes expanded: " + str(self.opened_count) + " | Solution length: " + str(count)
 

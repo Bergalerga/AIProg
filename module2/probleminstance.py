@@ -37,14 +37,13 @@ class Probleminstance():
 		self.gac.initialize(self.domains, self.constraints)
 		self.domains = self.gac.domain_filtering_loop()
 		self.astar = Astar(self)
-		
 
 	def solve(self):
 		'''
 		Runs one iteration of the astar algorithm
 		'''
 		self.current = self.astar.solve("A*")
-		return [self.current, self.astar.prev_current]
+		return [self, self.current, self.astar.prev_current]
 
 	def is_solution(self):
 		'''

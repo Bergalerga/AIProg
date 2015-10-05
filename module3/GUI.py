@@ -150,6 +150,11 @@ class Controller():
 		if isinstance(current, Probleminstance):
 			root.after(refresh_time, self.solve_loop)
 		else:
+			print("---------------")
+			if not prev_current.is_solution():
+				print("Run terminated, the problem is not solvable")
+				print("------------------")
+			print(current)
 			self.color_vertexes(prev_current)
 
 	def color_vertexes(self, current):
@@ -163,7 +168,7 @@ class Controller():
 
 if __name__ == "__main__":
 	global refresh_time
-	refresh_time = 50
+	refresh_time = 0
 	if (len(sys.argv) == 2 and int(sys.argv[1])):
 		refresh_time = sys.argv[1]
 	root = tk.Tk()

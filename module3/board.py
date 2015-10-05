@@ -3,17 +3,21 @@ from probleminstance import Probleminstance
 
 class Board():
 	'''
-
+	Class responsible for parsing the board from a text file, and making the domain and constraint dictonaries.
 	'''
 
+
 	def __init__(self, file):
+		'''
+		Initializes with a file, and reads its data.
+		'''
 		file = open(file, 'r')
 		self.file_data = file.readlines()
 		file.close()
 
 	def parse_text_file(self):
 		'''
-
+		Parses the text file.
 		'''
 		dimensions = self.file_data[0].replace("\n", "").split(" ")
 		self.number_of_rows = int(dimensions[1])
@@ -43,7 +47,7 @@ class Board():
 
 	def make_domain_dict(self, size, elements, info, num):
 		'''
-
+		Creates a dictionary of all the possible domains for all rows and columns.
 		'''
 		temp_domain_dict = {}
 		for node in range(elements):
@@ -86,7 +90,7 @@ class Board():
 
 	def make_constraint_dict(self, row_dict, column_dict):
 		'''
-
+		Makes the dictionary consisting of the constraints.
 		'''
 		for row_node in row_dict:
 			for column_node in column_dict:
@@ -103,7 +107,7 @@ class Board():
 
 	def get_free_spaces(self, length, block_array):
 		'''
-
+		Help method, returns the free spaces of a block.
 		'''
 		block_length = 0
 		number_of_blocks = 0
@@ -114,16 +118,7 @@ class Board():
 
 	def space_placement(self, spaces, length):
 		'''
-
+		Yields a viable space placement given a row or columns, must be iterated over.
 		'''
 		for c in combinations(range(spaces + length - 1), length - 1):
 			yield tuple(b - a - 1 for a, b in zip((-1,) + c, c + (spaces + length - 1,)))
-
-
-if __name__ == "__main__":
-	board = Board("scenario0.txt")
-	board.parse_text_file()
-	pr = Probleminstance(board.domain_dict, board.constraint_dict)
-	pr.initialize()
-	while isinstance(pr, Probleminstance):
-		pr = pr.solve()

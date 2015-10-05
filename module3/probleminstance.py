@@ -1,4 +1,4 @@
-from gac import GAC
+from gac_nonogram import Gac_nonogram
 from astar import Astar
 from constraints import Constraints
 
@@ -6,11 +6,13 @@ import copy
 
 class Probleminstance():
  	'''
-
+ 	Class holding a state of the problem, with domains and constraints. Also used to represent a node in astar.
  	'''
+
+
  	def __init__(self, domains, constraint_list):
  		'''
-
+ 		Initializes information, and sets the constraint formula.
  		'''
  		#A* INFO
 		self.h = 0
@@ -24,11 +26,11 @@ class Probleminstance():
 		self.domains = domains
 
 		#init gac
-		self.gac = GAC()
+		self.gac = Gac_nonogram()
 
 	def initialize(self):
 		'''
-
+		Initializes, and runs the initial domain filtering loop.
 		'''
 		self.gac.initialize(self.domains, self.constraints)
 		self.domains = self.gac.domain_filtering_loop()
@@ -37,14 +39,14 @@ class Probleminstance():
 
 	def solve(self):
 		'''
-
+		Iteratively ran to find new states.
 		'''
 		self.current = self.astar.solve("A*")
 		return [self.current, self.astar.prev_current]
 
 	def is_solution(self):
 		'''
-
+		Returns true if this state is a solution state, false if not.
 		'''
 		for domain in self.domains:
 			if len(self.domains[domain]) != 1:
@@ -53,7 +55,7 @@ class Probleminstance():
 
 	def get_neighbours(self):
 		'''
-
+		Returns the neighbours of this state.
 		'''
 		minlen = float("inf")
 		current_domain = None
@@ -75,13 +77,13 @@ class Probleminstance():
 
 	def get_arc_cost(self):
 		'''
-
+		Returns the cost of moving from this state. Always 1 in this problem.
 		'''
 		return 1
 
 	def get_h(self):
 		'''
-
+		Returns the h value, based on the amount of possible values for each row and column.
 		'''
 		h = 0
 		for domain in self.domains:
@@ -91,7 +93,7 @@ class Probleminstance():
 
 	def is_illegal(self):
 		'''
-
+		Returns true if this is a legal state, false if not.
 		'''
 		for node in self.domains:
 			if self.domains[node] == []:
@@ -110,7 +112,7 @@ class Probleminstance():
 
 	def __lt__(self, other):
 		'''
-
+		Less than comparison, compares on f primarily, h secondarily. Used by astar.
 		'''
 		if self.f == other.f:
 			return self.h < other.h
@@ -118,12 +120,12 @@ class Probleminstance():
 
 	def __eq__(self, other):
 		'''
-
+		Equals operator, checks if the domains are equal.
 		'''
 		return self.domains == other.domains
 
 	def __str__(self):
 		'''
-
+		String representation of this state's domains.
 		'''
 		return str(self.domains)

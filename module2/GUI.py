@@ -133,14 +133,24 @@ class Controller:
 		the gui for each time.
 		'''
 		solutions = self.vc.solve()
-		current = solutions[0]
-		prev_current = solutions[1]
+		problem_object = solutions[0]
+		current = solutions[1]
+		prev_current = solutions[2]
 		if isinstance(current, Probleminstance):
 			self.color_vertexes(current)
 			root.after(refresh_time, self.solve_loop)
 		else:
-			self.color_vertexes(prev_current)
+			print("------------------")
+			if not prev_current.is_solution():
+				print("Run terminated, the problem is not solvable")
+				print("------------------")
 			print(current)
+			count = 0
+			for domain in prev_current.domains:
+				if len(prev_current.domains[domain]) > 1:
+					count += 1
+			print ("Variables without color assignment: " + str(count))
+			self.color_vertexes(prev_current)
 
 
 	def color_vertexes(self, current):

@@ -1,10 +1,15 @@
-class GAC:
+class GAC(object):
 	'''
-
+	General GAC algorithm, used to filter out revise domains.
 	'''
-	def initialize(self, domains = {}, constraints = None):
+	def __init__(self):
 		'''
 
+		'''
+
+	def initialize(self, domains = {}, constraints = None):
+		'''
+		Initializes constraints and domains. Runs an initial domain filtering loop.
 		'''
 		self.constraints = constraints
 		self.domains = domains
@@ -15,7 +20,7 @@ class GAC:
 
 	def domain_filtering_loop(self):
 		'''
-
+		Goes through the edges to be revised, and removes illegal domains.
 		'''
 		while self.revise_queue:
 			node, constraint_node = self.revise_queue.pop(0)
@@ -23,34 +28,34 @@ class GAC:
 				for edges in self.constraints.involved[node]:
 					if [edges, node] not in self.revise_queue:
 						self.revise_queue.append([edges, node])
-						
 
 		return self.domains
 
 	def revise(self, node, constraint_node):
 		'''
-		node repr med tall 0, constraint repr som lambdafunksjon.
+		Checks if a domain satisfies constraints, removing it if it does not. Returns True
+		if something has been revised, False otherwise.
 		'''
 		revised = False
 		for x_domain in self.domains[node]:
 			satisfies = 0
 			for y_domain in self.domains[constraint_node]:
-				x_index = node[1]
-				y_index = constraint_node[1]
-				if self.constraints.expression(x_domain, y_domain, x_index, y_index):
+				if self.constraints.expression(x_domain, y_domain):
 					satisfies += 1
 			if satisfies == 0:
 				self.domains[node].remove(x_domain)
 				revised = True
+
 		return revised
 
 	def rerun(self, domains = {}, focal_node = None, constraints = None):
 		'''
-
+		Reruns domain filtering loop on a specified node.
 		'''
 		self.revise_queue = list()
 		self.domains = domains
 		self.constraints = constraints
 		for constraint_node in self.constraints.involved[focal_node]:
 			self.revise_queue.append([constraint_node, focal_node])
-		return self.domain_filtering_loop()
+		self.domain_filtering_loop()
+		return self.domains
