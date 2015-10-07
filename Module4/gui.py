@@ -129,7 +129,8 @@ class Controller():
 
 		'''
 		self.solver = solver.solve()
-		while not self.solver.is_solution():
+		while not self.solver.logic.is_solution():
+			color_state(self.solver.board)
 			root.after(refresh_time, solve)
 
 	### FOR PLAYING THE GAME MANUALLY ###

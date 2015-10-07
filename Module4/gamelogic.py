@@ -33,6 +33,21 @@ class Gamelogic():
 			self.append_random_number()
 		return self.board
 
+	def check_move(self, direction):
+		copy_board = copy.deepcopy(self.board)
+		if direction == 'RIGHT':
+			self.move_right()
+		
+		elif direction == 'LEFT':
+			self.move_left()
+
+		elif direction == 'UP':
+			self.move_up()
+
+		elif direction == 'DOWN':
+			self.move_down()
+		return self.board
+
 	def move_up(self):
 		'''
 
@@ -136,5 +151,10 @@ class Gamelogic():
 		'''
 
 		'''
-		pass
+		for row in self.board:
+			if 0 in row:
+				return True
+
+		#TODO, More logic. Need to test if any moves are possible.
+		return False
 
