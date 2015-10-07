@@ -52,15 +52,14 @@ class GUI(tk.Frame):
 		'''
 
 		'''
-		print(self.board)
 		self.delete_items()
-		for x in range(len(self.board)):
-			for y in range(len(self.board)):
+		for y in range(len(state)):
+			for x in range(len(state)):
 				x1 = x * self.rectangle_size
 				y1 = y * self.rectangle_size
 				x2 = x1 + self.rectangle_size
 				y2 = y1 + self.rectangle_size
-				number = self.board[x][y]
+				number = state[y][x]
 				if number == 0:
 					fill = 'white'
 				elif number == 2:
@@ -84,8 +83,11 @@ class GUI(tk.Frame):
 				elif number == 1024:
 					fill = 'red4'
 				else:
-					fill = 'black'
+					fill = 'blue'
 				self.id_list.append(self.canvas.create_rectangle(x1, y1, x2, y2, fill=fill))
+				self.id_list.append(self.canvas.create_text(x1 + self.rectangle_size / 2, 
+															y1 + self.rectangle_size / 2, 
+															text=str(number), font=("Purisa", 32)))
 
 	def delete_items(self):
 		'''
@@ -93,12 +95,20 @@ class GUI(tk.Frame):
 		'''
 		for item in self.id_list:
 			self.canvas.delete(item)
+		self.id_list = list()
 
 	def init_controller(self):
 		'''
 
 		'''
 		self.controller = Controller(self)
+		### FOR PLAYING GAME MANUALLY###
+		root.bind('<Right>', self.controller.move_right)
+		root.bind('<Left>', self.controller.move_left)
+		root.bind('<Up>', self.controller.move_up)
+		root.bind('<Down>', self.controller.move_down)
+		### END ###
+
 
 class Controller():
 	'''
@@ -110,22 +120,52 @@ class Controller():
 		'''
 
 		'''
-		solver = Solver()
+		self.gui = gui
+		self.solver = Solver(gui.board)
 		
 
 	def solve(self):
 		'''
 
 		'''
-		solver = solver.solve()
-		while not solver.is_solution():
+		self.solver = solver.solve()
+		while not self.solver.is_solution():
 			root.after(refresh_time, solve)
 
+	### FOR PLAYING THE GAME MANUALLY ###
+	def move_left(self, event):
+		'''
+
+		'''
+		state = self.solver.move("LEFT")
+		gui.color_state(state)
+
+	def move_right(self, event):
+		'''
+
+		'''
+		state = self.solver.move("RIGHT")
+		gui.color_state(state)
+
+	def move_up(self, event):
+		'''
+
+		'''
+		state = self.solver.move("UP")
+		gui.color_state(state)
+
+	def move_down(self, event):
+		'''
+
+		'''
+		state = self.solver.move("DOWN")
+		gui.color_state(state)
+
+	### END ###
 
 if __name__ == "__main__":
     '''
-    Initializes TkInter, and passes it to the gui, and initializes the gui's menu and controller. 
-    Sets an iteration delay of Astar, if defined from command line input. Iteration delay defaults to 50 ms.
+
     '''
     global refresh_time
     refresh_time = 50
