@@ -103,7 +103,7 @@ class GUI(tk.Frame):
 		'''
 		self.controller = Controller(self)
 		root.bind('<Return>', self.controller.solve)
-		### FOR PLAYING GAME MANUALLY###
+		### FOR PLAYING GAME MANUALLY ###
 		root.bind('<Right>', self.controller.move_right)
 		root.bind('<Left>', self.controller.move_left)
 		root.bind('<Up>', self.controller.move_up)
@@ -129,7 +129,6 @@ class Controller():
 		'''
 
 		'''
-		print(gui.board)
 		gui.board = self.solver.solve(gui.board)
 		gui.color_state(gui.board)
 
@@ -162,11 +161,9 @@ class Controller():
 		'''
 
 		'''
-		print(gui.board)
 		state = self.solver.move("DOWN", gui.board)
 		gui.board = state
 		gui.color_state(state)
-		print(gui.board)
 
 	### END ###
 

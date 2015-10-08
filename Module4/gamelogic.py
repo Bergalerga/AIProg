@@ -47,7 +47,7 @@ class Gamelogic():
 
 		elif direction == 'DOWN':
 			self.move_down()
-		if board == copy_board:
+		if self.board == copy_board:
 			return None
 		return board
 

@@ -29,10 +29,10 @@ class Solver():
 		self.neighbours = list()
 		heapq.heapify(self.neighbours)
 		if not self.logic.is_game_over(board):
-			self.minimax(board, 4, True)
-			print(self.neighbours)
-			board = heapq.heappop(self.neighbours)
-			return board[1]
+			self.minimax(board, 1, True)
+			board = heapq.heappop(self.neighbours)[1]
+			board = self.logic.append_random_number(board)
+			return board
 
 			#Return some board
 
@@ -43,6 +43,7 @@ class Solver():
 		neighbours = list()
 		for move in self.directions:
 			neighbour = self.logic.check_move(self.directions[move], board)
+			print(self.directions[move], neighbour)
 			if neighbour != None:
 				neighbours.append(neighbour)
 		return neighbours
@@ -89,4 +90,5 @@ class Solver():
 
 if __name__ == "__main__":
 	solver = Solver()
+	print("-----------")
 	print(solver.solve([[0, 0, 0, 0],[0, 2, 0, 2],[0, 0, 0, 0],[0, 0, 0, 0]]))
