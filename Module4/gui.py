@@ -102,6 +102,7 @@ class GUI(tk.Frame):
 
 		'''
 		self.controller = Controller(self)
+		root.bind('<Return>', self.controller.solve)
 		### FOR PLAYING GAME MANUALLY###
 		root.bind('<Right>', self.controller.move_right)
 		root.bind('<Left>', self.controller.move_left)
@@ -121,46 +122,51 @@ class Controller():
 
 		'''
 		self.gui = gui
-		self.solver = Solver(gui.board)
+		self.solver = Solver()
 		
 
-	def solve(self):
+	def solve(self, event):
 		'''
 
 		'''
-		self.solver = solver.solve()
-		while not self.solver.logic.is_solution():
-			color_state(self.solver.board)
-			root.after(refresh_time, solve)
+		print(gui.board)
+		gui.board = self.solver.solve(gui.board)
+		gui.color_state(gui.board)
 
 	### FOR PLAYING THE GAME MANUALLY ###
 	def move_left(self, event):
 		'''
 
 		'''
-		state = self.solver.move("LEFT")
+		state = self.solver.move("LEFT", gui.board)
 		gui.color_state(state)
+		gui.board = state
 
 	def move_right(self, event):
 		'''
 
 		'''
-		state = self.solver.move("RIGHT")
+		state = self.solver.move("RIGHT", gui.board)
 		gui.color_state(state)
+		gui.board = state
 
 	def move_up(self, event):
 		'''
 
 		'''
-		state = self.solver.move("UP")
+		state = self.solver.move("UP", gui.board)
 		gui.color_state(state)
+		gui.board = state
 
 	def move_down(self, event):
 		'''
 
 		'''
-		state = self.solver.move("DOWN")
+		print(gui.board)
+		state = self.solver.move("DOWN", gui.board)
+		gui.board = state
 		gui.color_state(state)
+		print(gui.board)
 
 	### END ###
 

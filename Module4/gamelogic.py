@@ -6,16 +6,16 @@ class Gamelogic():
 
 	'''
 
-	def __init__(self, board):
+	def __init__(self):
+		'''
+
+		'''
+
+	def move(self, direction, board):
 		'''
 
 		'''
 		self.board = board
-
-	def move(self, direction):
-		'''
-
-		'''
 		copy_board = copy.deepcopy(self.board)
 		if direction == 'RIGHT':
 			self.move_right()
@@ -30,10 +30,11 @@ class Gamelogic():
 			self.move_down()
 
 		if copy_board != self.board:
-			self.append_random_number()
+			self.board = self.append_random_number(self.board)
 		return self.board
 
-	def check_move(self, direction):
+	def check_move(self, direction, board):
+		self.board = board
 		copy_board = copy.deepcopy(self.board)
 		if direction == 'RIGHT':
 			self.move_right()
@@ -46,7 +47,9 @@ class Gamelogic():
 
 		elif direction == 'DOWN':
 			self.move_down()
-		return self.board
+		if board == copy_board:
+			return None
+		return board
 
 	def move_up(self):
 		'''
@@ -120,7 +123,7 @@ class Gamelogic():
 			temp_board.append([self.board[count][number] for count in range(4)])
 		self.board = temp_board
 
-	def append_random_number(self):
+	def append_random_number(self, board):
 		'''
 
 		'''
@@ -131,30 +134,45 @@ class Gamelogic():
 			number = 2
 		x_loc = random.randint(0, 3)
 		y_loc = random.randint(0, 3)
-		while self.board[x_loc][y_loc] != 0:
+		while board[x_loc][y_loc] != 0:
 			x_loc = random.randint(0, 3)
 			y_loc = random.randint(0, 3)
-		print(x_loc, y_loc, number)
-		self.board[x_loc][y_loc] = number
-		print(self.board)
+		board[x_loc][y_loc] = number
+		return board
 
-	def is_solution(self):
+	def append_all_random_numbers(self, board):
 		'''
 
 		'''
-		for row in self.board:
+		permutations = list()
+		for row in range(len(board)):
+			for value in range(len(board)):
+				if board[row][value] == 0:
+					board[row][value] = 2
+					permutations.append(copy.deepcopy(board))
+					board[row][value] = 4
+					permutations.append(copy.deepcopy(board))
+					board[row][value] = 0
+		return permutations
+
+
+	def is_solution(self, board):
+		'''
+
+		'''
+		for row in board:
 			if 2048 in row:
 				return True
 		return False
 
-	def is_game_over(self):
+	def is_game_over(self, board):
 		'''
 
 		'''
-		for row in self.board:
+		for row in board:
 			if 0 in row:
-				return True
+				return False
 
 		#TODO, More logic. Need to test if any moves are possible.
-		return False
+		return True
 
