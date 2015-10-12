@@ -33,8 +33,8 @@ class GUI(tk.Frame):
 		y1 = random.randint(0, 3)
 		y2 = random.randint(0, 3)
 		while x1 == x2 and y1 == y2:
-			x2 = random.randint(0, 4)
-			y2 = random.randint(0, 4)
+			x2 = random.randint(0, 3)
+			y2 = random.randint(0, 3)
 		for x in range(self.rows):
 			y_list = list()
 			for y in range(self.cols):
@@ -131,7 +131,8 @@ class Controller():
 
 		'''
 		gui.board = self.solver.solve(gui.board)
-		gui.color_state(gui.board)
+		if gui.board != None:
+			gui.color_state(gui.board)
 
 	### FOR PLAYING THE GAME MANUALLY ###
 	def move_left(self, event):

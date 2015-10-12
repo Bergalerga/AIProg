@@ -49,7 +49,7 @@ class Gamelogic():
 			self.move_down()
 		if self.board == copy_board:
 			return None
-		return board
+		return self.board
 
 	def move_up(self):
 		'''
@@ -144,14 +144,16 @@ class Gamelogic():
 		'''
 
 		'''
-		permutations = list()
+		permutations = dict()
+		permutations[2] = list()
+		permutations[4] = list()
 		for row in range(len(board)):
 			for value in range(len(board)):
 				if board[row][value] == 0:
 					board[row][value] = 2
-					permutations.append(copy.deepcopy(board))
+					permutations[2].append(copy.deepcopy(board))
 					board[row][value] = 4
-					permutations.append(copy.deepcopy(board))
+					permutations[4].append(copy.deepcopy(board))
 					board[row][value] = 0
 		return permutations
 
@@ -164,15 +166,4 @@ class Gamelogic():
 			if 2048 in row:
 				return True
 		return False
-
-	def is_game_over(self, board):
-		'''
-
-		'''
-		for row in board:
-			if 0 in row:
-				return False
-
-		#TODO, More logic. Need to test if any moves are possible.
-		return True
 
