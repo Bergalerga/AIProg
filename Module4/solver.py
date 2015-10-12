@@ -1,6 +1,7 @@
 from gamelogic import Gamelogic
 import heapq
 import copy
+import numpy
 
 class Solver():
 	'''
@@ -12,6 +13,9 @@ class Solver():
 		'''
 
 		'''
+		self.outerlines_heurestic = [[7,6,5,4],[6,4,3,3],[5,3,2,2],[4,3,2,1]]
+		self.snake_heurestic = [[16,15,14,13],[9,10,11,12],[8,7,6,5],[1,2,3,4]]
+		self.gradient_heurestic = [[7,6,5,4],[6,5,4,3],[5,4,3,2],[4,3,2,1]]
 		self.directions = {1: "RIGHT", 2: "LEFT", 3: "UP", 4: "DOWN"}
 		self.logic = Gamelogic()
 		self.neighbours = list()
@@ -30,7 +34,6 @@ class Solver():
 		if board != None:
 			self.neighbours = list()
 			self.expectimax(board, 1, True)
-			print(self.neighbours)
 			if len(self.neighbours) != 0:
 				board = heapq.heappop(self.neighbours)[1]
 				board = self.logic.append_random_number(board)
@@ -55,13 +58,28 @@ class Solver():
 		'''
 
 		'''
-		#Currently just counts the amount of white spaces.
-		#TODO, figure out good heuristic.
-
-		h = 16
+		h = 9000
+		#number of zeros
 		for row in board:
 			h -= row.count(0)
-		return h
+
+		#gradient
+		
+		for rotations in range(4):
+			gradient_board_score = numpy.array(board) * numpy.rot90(self.gradient, rotations)
+
+		best_h = h
+		for row in gradient_board_score:
+			for value in row:
+				h -= value
+			if h < best_h:
+				best_h = h
+
+		print board
+		print h
+		print "----------------------"
+
+		return best_h
 
 	def random_permutations(self, board):
 		'''
