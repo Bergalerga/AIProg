@@ -85,9 +85,10 @@ class GUI(tk.Frame):
 				else:
 					fill = 'blue'
 				self.id_list.append(self.canvas.create_rectangle(x1, y1, x2, y2, fill=fill))
-				self.id_list.append(self.canvas.create_text(x1 + self.rectangle_size / 2, 
-															y1 + self.rectangle_size / 2, 
-															text=str(number), font=("Purisa", 32)))
+				if number != 0:
+					self.id_list.append(self.canvas.create_text(x1 + self.rectangle_size / 2, 
+																y1 + self.rectangle_size / 2, 
+																text=str(number), font=("Purisa", 32)))
 
 	def delete_items(self):
 		'''

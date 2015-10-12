@@ -47,6 +47,7 @@ class Solver():
 			if neighbour != None:
 				neighbours.append(neighbour)
 		return neighbours
+
 	def heuristic(self, board):
 		'''
 
@@ -66,27 +67,24 @@ class Solver():
 		permutations = self.logic.append_all_random_numbers(board)
 		return permutations
 
-	def minimax(self, board, depth, maximizing_player):
+	def expectimax(self, board, depth, maximizing_player):
 		'''
 
 		'''
-		if self.logic.is_game_over(board):
-			exit(0)
 		if depth == 0:
-			heapq.heappush(self.neighbours, (self.heuristic(board), board))
 			return self.heuristic(board)
 		if maximizing_player:
-			best_value = float("-inf")
-			for child in self.get_neighbours(board):
-				val = self.minimax(child, depth - 1, False)
-				best_value = max(best_value, val)
-			return best_value
+			#Return value of maximum-valued child node
+			let α := -∞
+			alpha = float("-inf")
+			for neighbour in self.get_neighbours(board):
+				alpha = max(α, expectimax(neighbour, depth - 1, False))
 		else:
-			best_value = float("inf")
-			for child in self.random_permutations(board):
-				val = self.minimax(child, depth - 1, True)
-				best_value = min(best_value, val)
-			return best_value
+			# Return weighted average of all child nodes' values
+			alpha = 0
+			for neighbour in self.get_neighbours(board):
+				alpha = alpha + (Probability[child] * expectimax(child, depth-1))
+		return alpha
 
 if __name__ == "__main__":
 	solver = Solver()
