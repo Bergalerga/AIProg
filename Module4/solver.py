@@ -33,15 +33,12 @@ class Solver():
 		'''
 		if board != None:
 			self.neighbours = list()
-			self.expectimax(board, 1, True)
-			if len(self.neighbours) != 0:
-				board = heapq.heappop(self.neighbours)[1]
-				board = self.logic.append_random_number(board)
-				return board
-			else:
-				return None
-
-			#Return some board
+			heapq.heapify(self.neighbours)
+			for neighbour in self.get_neighbours(board):
+				heapq.heappush(self.neighbours, (self.expectimax(neighbour, 3, False), neighbour))
+			board = heapq.heappop(self.neighbours)[1]
+			board = self.logic.append_random_number(board)
+			return board
 
 	def get_neighbours(self, board):
 		'''
@@ -105,8 +102,11 @@ class Solver():
 
 		'''
 		if depth == 0:
-			heapq.heappush(self.neighbours, (self.heuristic(board), board))
-			return ((self.heuristic(board), board))
+			h = self.heuristic(board)
+			#SKJOENNER IKKE HVORDAN JEG SKAL HEAPPUSHE BARE DE 4 FOERSTE MAXNODENE,
+			#OG MED HVOR FAAR JEG HEURISTIKKEN DEMS FRA???
+			#heapq.heappush(self.neighbours, (h, board))
+			return h
 		if maximizing_player:
 			#Return value of maximum-valued child node
 			alpha = float("-inf")
@@ -118,7 +118,9 @@ class Solver():
 			neighbours = self.logic.append_all_random_numbers(board)
 			for key in neighbours.keys():
 				for neighbour in neighbours[key]:
-					alpha += (self.probability_of_reaching_node(key, board) * self.expectimax(neighbour, depth-1, True))
+					alpha += (self.probability_of_reaching_node(key, board) * self.expectimax(neighbour, depth - 1, True))
+		#print("alpha")
+		return alpha
 
 if __name__ == "__main__":
 	solver = Solver()
