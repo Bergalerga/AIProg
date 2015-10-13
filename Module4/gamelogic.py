@@ -144,6 +144,7 @@ class Gamelogic():
 		'''
 
 		'''
+		print("RANDOM NUMBERS")
 		permutations = dict()
 		permutations[2] = list()
 		permutations[4] = list()
@@ -155,6 +156,7 @@ class Gamelogic():
 					board[row][value] = 4
 					permutations[4].append(copy.deepcopy(board))
 					board[row][value] = 0
+		print("RANDOM NUMBERS DONE")
 		return permutations
 
 

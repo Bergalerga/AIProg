@@ -61,22 +61,20 @@ class Solver():
 			h -= row.count(0)
 
 		#gradient
-		
+		'''
 		for rotations in range(4):
-			gradient_board_score = numpy.array(board) * numpy.rot90(self.gradient, rotations)
-
+			gradient_board_score = numpy.array(board) * numpy.rot90(self.outerlines_heurestic, rotations)
+		
+		gradient_board_score = numpy.array(board) * numpy.array(self.snake_heurestic)
+		
 		best_h = h
 		for row in gradient_board_score:
 			for value in row:
 				h -= value
 			if h < best_h:
 				best_h = h
-
-		print board
-		print h
-		print "----------------------"
-
-		return best_h
+		'''
+		return h
 
 	def random_permutations(self, board):
 		'''
@@ -103,9 +101,6 @@ class Solver():
 		'''
 		if depth == 0:
 			h = self.heuristic(board)
-			#SKJOENNER IKKE HVORDAN JEG SKAL HEAPPUSHE BARE DE 4 FOERSTE MAXNODENE,
-			#OG MED HVOR FAAR JEG HEURISTIKKEN DEMS FRA???
-			#heapq.heappush(self.neighbours, (h, board))
 			return h
 		if maximizing_player:
 			#Return value of maximum-valued child node
