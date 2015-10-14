@@ -23,10 +23,8 @@ public class AI {
         float best = Float.MAX_VALUE;
         Direction direction = null;
         for (Direction dir : Direction.values()) {
-            System.out.println(dir);
-            System.out.println(Arrays.deepToString(board.getBoard()));
             int[][] move = Board.checkMove(current, dir);
-            System.out.println(Arrays.deepToString(board.getBoard()));
+            //Performs expectimax with all moves.
             if (!Arrays.deepEquals(current, move)) {
                 float neighbour = expectimax(move, this.depth, false);
                 if (neighbour < best) {
@@ -43,12 +41,14 @@ public class AI {
             int h = heuristic(board);
             return h;
         }
+        //Max node
         if (maximizing_player) {
             this.alpha = Integer.MIN_VALUE;
             for (int[][] neighbour : getNeighbours(board)) {
                 alpha = Math.max(alpha, expectimax(neighbour, depth - 1, false));
             }
         }
+        //Change node
         else {
             //Return weighted average of all child nodes' values
             this.alpha = 0;
@@ -73,14 +73,15 @@ public class AI {
 
     public int heuristic(int[][] board) {
         //TALE PLS
-        int h = 16;
+        int h = 9000;
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
                 if (board[x][y] == 0) {
-                    h -= 1;
+                    h -= 3;
                 }
             }
         }
+
         return h;
         //END TALE PLS
     }
