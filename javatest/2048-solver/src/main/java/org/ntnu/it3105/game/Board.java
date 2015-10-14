@@ -171,7 +171,9 @@ public class Board {
             case DOWN:
                 board = rotateClockwise(board);
                 break;
-            default:
+            case LEFT:
+                board = rotateClockwise(board);
+                board = rotateCounterClockwise(board);
                 break;
         }
 
@@ -191,10 +193,7 @@ public class Board {
                 while (previousPosition > lastMergePosition && board[row][previousPosition] == 0) { // Skip all unpopulated cells (> 0)
                     --previousPosition;
                 }
-
-                if (previousPosition == col) {
-                    //log.debug("This cell can not be moved, same cell");
-                } else if (board[row][previousPosition] == 0) {
+                if (board[row][previousPosition] == 0) {
                     // Moving to an empty cell
                     //log.debug("Moving to an empty cell (" + row + ", " + previousPosition + ")");
                     board[row][previousPosition] = board[row][col];
@@ -204,11 +203,6 @@ public class Board {
                     board[row][previousPosition] = board[row][col];
                     board[row][col] = 0;
                     board[row][previousPosition] *= 2;
-
-                    if (board[row][previousPosition] == TARGET_VALUE) {
-                        //log.info("Reached the target value, setting hasWon to true");
-                    }
-
                     lastMergePosition = previousPosition + 1;
                 } else if (board[row][previousPosition] != board[row][col] && previousPosition + 1 != col) {
                     //log.debug("");
@@ -229,7 +223,9 @@ public class Board {
             case DOWN:
                 board = rotateCounterClockwise(board);
                 break;
-            default:
+            case LEFT:
+                board = rotateClockwise(board);
+                board = rotateCounterClockwise(board);
                 break;
         }
         return board;

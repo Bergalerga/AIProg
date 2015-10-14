@@ -23,7 +23,10 @@ public class AI {
         float best = Float.MAX_VALUE;
         Direction direction = null;
         for (Direction dir : Direction.values()) {
+            System.out.println(dir);
+            System.out.println(Arrays.deepToString(board.getBoard()));
             int[][] move = Board.checkMove(current, dir);
+            System.out.println(Arrays.deepToString(board.getBoard()));
             if (!Arrays.deepEquals(current, move)) {
                 float neighbour = expectimax(move, this.depth, false);
                 if (neighbour < best) {
