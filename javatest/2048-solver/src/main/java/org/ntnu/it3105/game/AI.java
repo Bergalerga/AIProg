@@ -20,14 +20,14 @@ public class AI {
 
     public Direction getNextMove(Board board) {
         int[][] current = board.getBoard();
-        float best = Float.MAX_VALUE;
+        float best = 0;
         Direction direction = null;
         for (Direction dir : Direction.values()) {
             int[][] move = Board.checkMove(current, dir);
             //Performs expectimax with all moves.
             if (!Arrays.deepEquals(current, move)) {
                 float neighbour = expectimax(move, this.depth, false);
-                if (neighbour < best) {
+                if (neighbour > best) {
                     best = neighbour;
                     direction = dir;
                 }
@@ -80,15 +80,15 @@ public class AI {
                 { 5, 3, 2, 2 },
                 { 4, 3, 2, 1 }
         };
-        int h = 90000;
+        int h = 0;
 
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
                 if (board[x][y] == 0) {
-                    h -= 1;
+                    h += 1;
                 }
-                //h -= board[x][y];
-                h -= board[x][y]*gradient[x][y];
+                h += board[x][y];
+                h += board[x][y]*gradient[x][y];
             }
         }
 

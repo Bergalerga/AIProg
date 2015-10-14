@@ -39,7 +39,7 @@ public class Controller {
             return;
         }
 
-        if (!board.hasWon() && board.canMove()) {
+        if (board.canMove()) {
             board.doMove(directionToMove);
         }
 
