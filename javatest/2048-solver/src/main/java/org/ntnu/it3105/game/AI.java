@@ -70,12 +70,21 @@ public class AI {
 
     public int heuristic(int[][] board) {
         //TALE PLS
-        int h = 16;
+
+        double[][] gradient = {
+                { 7, 6, 5, 4 },
+                { 6, 4, 3, 3 },
+                { 5, 3, 2, 2 },
+                { 4, 3, 2, 1 }
+        };
+        int h = 90000;
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
                 if (board[x][y] == 0) {
                     h -= 1;
                 }
+                //h -= board[x][y];
+                h -= board[x][y]*gradient[x][y];
             }
         }
         return h;
