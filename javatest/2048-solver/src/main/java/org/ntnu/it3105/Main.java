@@ -33,7 +33,7 @@ public class Main extends Application {
         configureAndShowPrimaryStage();
 
         //Initialize the ai
-        ai = new AI(3);
+        ai = new AI(4);
 
         // Setting global key listener for the scene
         scene.setOnKeyReleased((keyEvent) -> {
@@ -41,7 +41,10 @@ public class Main extends Application {
             switch (keyEvent.getCode()) {
                 case S:
                     log.info("Use AI to solve the game");
-                    break;
+                    while(1<2){
+
+                        controller.doMove(ai.getNextMove(controller.getBoard()));
+                    }
                 case ENTER:
                     log.info("Use AI to do one move");
                     controller.doMove(ai.getNextMove(controller.getBoard()));

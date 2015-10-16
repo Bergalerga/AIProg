@@ -80,18 +80,28 @@ public class AI {
                 { 5, 3, 2, 2 },
                 { 4, 3, 2, 1 }
         };
-        int h = 0;
+        double[][] snake = {
+                { 16, 15, 14, 13 },
+                { 12, 11, 10, 9 },
+                { 8, 7, 6, 5 },
+                { 4, 3, 2, 1 }
+        };
+        int zeroes = 0;
+        int value = 0;
+        int gradients = 0;
+
 
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
                 if (board[x][y] == 0) {
-                    h += 1;
+                    zeroes += 1;
                 }
-                h += board[x][y];
-                h += board[x][y]*gradient[x][y];
+                value += board[x][y];
+                gradients += board[x][y]*gradient[x][y];
             }
         }
 
+        int h = (zeroes*20 + value*50 + gradients*30)/100;
         return h;
         //END TALE PLS
     }

@@ -123,6 +123,8 @@ public class Board {
 
                     if (tiles[row][previousPosition] == TARGET_VALUE) {
                         hasWon = true;
+
+
                         log.info("Reached the target value, setting hasWon to true");
                     }
 
@@ -379,5 +381,18 @@ public class Board {
      */
     public boolean hasWon() {
         return hasWon;
+    }
+
+    public int getRightAdjacentTiles(int x, int y){
+        return  tiles[x+1][y];
+    }
+    public int getLeftAdjacentTiles(int x, int y){
+        return  tiles[x-1][y];
+    }
+    public int getUpAdjacentTiles(int x, int y){
+        return  tiles[x][y+1];
+    }
+    public int getDownAdjacentTiles(int x, int y){
+        return  tiles[x][y-1];
     }
 }
