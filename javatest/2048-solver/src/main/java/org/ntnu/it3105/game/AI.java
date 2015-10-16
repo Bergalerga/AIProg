@@ -1,9 +1,7 @@
 package org.ntnu.it3105.game;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.PriorityQueue;
+import java.util.*;
 
 /**
  * Created by berg on 13/10/15.
@@ -17,7 +15,8 @@ public class AI {
         this.depth = depth;
         this.alpha = 0;
     }
-
+    //Calls expectimax on the moves that are possible to do from this board state.
+    //Returns a direction to move.
     public Direction getNextMove(Board board) {
         int[][] current = board.getBoard();
         float best = 0;
@@ -35,7 +34,7 @@ public class AI {
         }
         return direction;
     }
-
+    //Main algorithm.
     private float expectimax(int[][] board, int depth, boolean maximizing_player) {
         if (depth == 0) {
             int h = heuristic(board);
@@ -70,7 +69,7 @@ public class AI {
         return this.alpha;
     }
 
-
+    //Heuristic function
     public int heuristic(int[][] board) {
         //TALE PLS
 
@@ -95,12 +94,30 @@ public class AI {
         return h;
         //END TALE PLS
     }
-
+    //Returns the boards for all 4 move directions.
     public ArrayList<int[][]> getNeighbours(int[][] board) {
         ArrayList<int[][]> neighbours = new ArrayList();
         for (Direction dir : Direction.values()) {
             neighbours.add(Board.checkMove(board, dir));
         }
         return neighbours;
+    }
+
+    //Returns a hashmap with, key = Direction, value = value of adjacent node of the board.
+    public Map<Direction, Integer> getValuesOfAdjacentNodes(int[][] board, int x, int y) {
+        Map<Direction, Integer> adjacentNodes = new HashMap<>();
+        if (x < 3) {
+            adjacentNodes.put(Direction.RIGHT, board[y][x + 1]);
+        }
+        if (y < 3) {
+            adjacentNodes.put(Direction.DOWN, board[y + 1][x]);
+        }
+        if (x > 0) {
+            adjacentNodes.put(Direction.LEFT, board[y][x - 1]);
+        }
+        if (y > 0) {
+            adjacentNodes.put(Direction.UP, board[y - 1][x]);
+        }
+        return adjacentNodes;
     }
 }
