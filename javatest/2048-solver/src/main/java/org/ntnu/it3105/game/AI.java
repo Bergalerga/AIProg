@@ -71,7 +71,6 @@ public class AI {
 
     //Heuristic function
     public int heuristic(int[][] board) {
-        //TALE PLS
 
         double[][] gradient = {
                 { 7, 6, 5, 4 },
@@ -86,8 +85,8 @@ public class AI {
                 { 4, 3, 2, 1 }
         };
         int zeroes = 0;
-        int value = 0;
         int gradients = 0;
+        int adjacent = 0;
 
 
         for (int x = 0; x < 4; x++) {
@@ -95,14 +94,20 @@ public class AI {
                 if (board[x][y] == 0) {
                     zeroes += 1;
                 }
-                value += board[x][y];
                 gradients += board[x][y]*gradient[x][y];
+
+                for (Map.Entry<Direction, Integer> entry :  getValuesOfAdjacentNodes(board, x, y).entrySet()){
+                    if (board[x][y] == entry.getValue()){
+                        adjacent += 1;
+                    }
+                }
+
+
             }
         }
 
-        int h = (zeroes*20 + value*50 + gradients*30)/100;
+        int h = (zeroes*20 + adjacent*50 + gradients*30)/100;
         return h;
-        //END TALE PLS
     }
     //Returns the boards for all 4 move directions.
     public ArrayList<int[][]> getNeighbours(int[][] board) {
