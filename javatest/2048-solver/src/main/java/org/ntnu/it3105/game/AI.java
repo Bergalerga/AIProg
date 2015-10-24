@@ -37,7 +37,7 @@ public class AI {
     //Main algorithm.
     private float expectimax(int[][] board, int depth, boolean maximizing_player) {
         if (depth == 0) {
-            int h = heuristic(board);
+            float h = heuristic(board);
             return h;
         }
         //Max node
@@ -70,13 +70,13 @@ public class AI {
     }
 
     //Heuristic function
-    public int heuristic(int[][] board) {
+    public float heuristic(int[][] board) {
 
         double[][] gradient = {
-                { 7, 6, 5, 4 },
-                { 6, 4, 3, 3 },
-                { 5, 3, 2, 2 },
-                { 4, 3, 2, 1 }
+                { 10, 9, 8, 7 },
+                { 9, 5, 4, 3 },
+                { 8, 4, 2, 2 },
+                { 7, 3, 2, 1 }
         };
         double[][] snake = {
                 { 16, 15, 14, 13 },
@@ -87,6 +87,7 @@ public class AI {
         int zeroes = 0;
         int gradients = 0;
         int adjacent = 0;
+        int totalsum = 0;
 
 
         for (int x = 0; x < 4; x++) {
@@ -94,8 +95,8 @@ public class AI {
                 if (board[x][y] == 0) {
                     zeroes += 1;
                 }
-                gradients += board[x][y]*gradient[x][y];
-
+                gradients += board[x][y]*gradient[x][y]*snake[x][y];
+                totalsum += board[x][y];
                 for (Map.Entry<Direction, Integer> entry :  getValuesOfAdjacentNodes(board, x, y).entrySet()){
                     if (board[x][y] == entry.getValue()){
                         adjacent += 1;
@@ -106,7 +107,9 @@ public class AI {
             }
         }
 
-        int h = (zeroes*20 + adjacent*50 + gradients*30)/100;
+        int average_sum_per_tile = totalsum / (16-zeroes);
+
+        int h = zeroes + adjacent + gradients + average_sum_per_tile;
         return h;
     }
     //Returns the boards for all 4 move directions.
