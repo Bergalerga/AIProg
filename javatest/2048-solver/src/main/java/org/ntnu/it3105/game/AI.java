@@ -95,7 +95,7 @@ public class AI {
                 if (board[x][y] == 0) {
                     zeroes += 1;
                 }
-                gradients += board[x][y]*gradient[x][y]*snake[x][y];
+                gradients += board[x][y]*gradient[x][y];
                 totalsum += board[x][y];
                 for (Map.Entry<Direction, Integer> entry :  getValuesOfAdjacentNodes(board, x, y).entrySet()){
                     if (board[x][y] == entry.getValue()){
@@ -109,7 +109,13 @@ public class AI {
 
         int average_sum_per_tile = totalsum / (16-zeroes);
 
-        int h = zeroes + adjacent + gradients + average_sum_per_tile;
+        int weight = gradients/40;
+        int h = zeroes*weight + adjacent*weight + gradients + average_sum_per_tile*weight;
+
+        System.out.println("null: " + zeroes*weight);
+        System.out.println("adjacent: " + adjacent*weight);
+        System.out.println("gradient: " + gradients);
+        System.out.println("average: " + average_sum_per_tile*weight);
         return h;
     }
     //Returns the boards for all 4 move directions.
