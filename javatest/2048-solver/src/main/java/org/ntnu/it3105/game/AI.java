@@ -34,28 +34,28 @@ public class AI {
         }
         return direction;
     }
-    //Main algorithm.
+    //Expectimax algorithm.
     private float expectimax(int[][] board, int depth, boolean maximizing_player) {
+        //Maximum depth of search tree reached, calculate heuristic.
         if (depth == 0) {
             float h = heuristic(board);
             return h;
         }
-        //Max node
+        //Max node(player move), return value of the best max_move
         if (maximizing_player) {
             this.alpha = Integer.MIN_VALUE;
             for (int[][] neighbour : getNeighbours(board)) {
                 alpha = Math.max(alpha, expectimax(neighbour, depth - 1, false));
             }
         }
-        //Change node
+        //Chance node, return weighted average of all child nodes' values.
         else {
-            //Return weighted average of all child nodes' values
             this.alpha = 0;
             int numberOfZeroes = Board.countZeroes(board);
             for (int x = 0; x < 4; x++) {
                 for (int y = 0; y < 4; y++) {
                     if (board[x][y] == 0) {
-                        numberOfZeroes += 1;
+                        //numberOfZeroes += 1;
                         int[][] copy = Board.getCopy(board);
                         copy[x][y] = 2;
                         alpha += ((0.9 / numberOfZeroes) * expectimax(copy, depth - 1, true));
@@ -102,20 +102,12 @@ public class AI {
                         adjacent += 1;
                     }
                 }
-
-
             }
         }
 
         int average_sum_per_tile = totalsum / (16-zeroes);
 
-        int weight = gradients/40;
-        int h = zeroes*weight + adjacent*weight + gradients + average_sum_per_tile*weight;
-
-        System.out.println("null: " + zeroes*weight);
-        System.out.println("adjacent: " + adjacent*weight);
-        System.out.println("gradient: " + gradients);
-        System.out.println("average: " + average_sum_per_tile*weight);
+        int h = zeroes + adjacent + gradients + average_sum_per_tile;
         return h;
     }
     //Returns the boards for all 4 move directions.
