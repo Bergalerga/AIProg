@@ -55,7 +55,6 @@ public class AI {
             for (int x = 0; x < 4; x++) {
                 for (int y = 0; y < 4; y++) {
                     if (board[x][y] == 0) {
-                        //numberOfZeroes += 1;
                         int[][] copy = Board.getCopy(board);
                         copy[x][y] = 2;
                         alpha += ((0.9 / numberOfZeroes) * expectimax(copy, depth - 1, true));
@@ -107,7 +106,7 @@ public class AI {
 
         int average_sum_per_tile = totalsum / (16-zeroes);
 
-        int h = zeroes + adjacent + gradients + average_sum_per_tile;
+        int h = adjacent + gradients + average_sum_per_tile;
         return h;
     }
     //Returns the boards for all 4 move directions.
