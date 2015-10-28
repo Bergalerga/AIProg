@@ -1,3 +1,6 @@
+from theano import *
+import theano.tensor as T
+
 class ANN(object):
 	'''
 
@@ -8,4 +11,7 @@ class ANN(object):
 		'''
 
 		'''
+		print("Theano")
 		pass
+
+a = ANN()
