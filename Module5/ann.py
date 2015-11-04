@@ -5,8 +5,9 @@ import theano
 import theano.tensor as T
 import theano.tensor.nnet as Tann
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import theano.tensor.nnet as Tann
+import basics.mnist_basics as Mnist
 #import grapher as graph
 #import graphviz # Needed for the import of pydot
 #import pydot # for printing out theano function graphs to a file
@@ -51,22 +52,20 @@ class ANN(object):
 		self.predictor = theano.function([input],[x2,x1])
 		self.trainer = theano.function([input],error,updates=backprop_acts)
 
-	def do_training(self,epochs=100,test_interval=None):
-		#graph.start_interactive_mode()
+	def do_training(self, epochs = 1, test_interval = None, cases = None):
 		errors = []
-		if test_interval: self.avg_vector_distances = []
+		if test_interval:
+			self.avg_vector_distances = []
 		for i in range(epochs):
 			error = 0
-			for c in self.cases:
+			print("Start training")
+			for c in cases[0]:
+				#Vet ikke hva som skal inn i trainer funksjonen
+				return
 				error += self.trainer(c)
 			errors.append(error)
-			if test_interval: self.consider_interim_test(i,test_interval)
-		#graph.simple_plot(errors,xtitle="Epoch",ytitle="Error",title="")
-		if test_interval:
-			#graph.newfig()
-			#graph.simple_plot(self.avg_vector_distances,xtitle='Epoch',
-			#				ytitle='Avg Hidden-Node Vector Distance',title='')
-			pass
+			if test_interval:
+				self.consider_interim_test(i,test_interval)	
 
 	def do_testing(self,scatter=True):
 		hidden_activations = []
@@ -77,5 +76,9 @@ class ANN(object):
 		return hidden_activation
 
 if __name__ == "__main__":
-	a = ANN()
-	a.build_ann()
+	cases = Mnist.load_all_flat_cases()
+	#cases[0]: 2d list of all the test cases/images
+	#cases[1]: 1d list of all the labels
+	ann = ANN()
+	ann.build_ann()
+	ann.do_training(cases = cases)
