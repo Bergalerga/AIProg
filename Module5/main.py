@@ -13,21 +13,28 @@ class ANN():
     '''
 
 
-    def __init__(self, nr_of_training_images, nb=28*28, nh=700, lr=0.001, ann_type = "rlu"):
+    def __init__(self, number_of_training_images, ann_type, nb=784, nh=700, lr=0.001):
         '''
         Initializes by loading the images and building the neural network structure.
         '''
-        self.images, self.labels = gen_x_flat_cases(nr_of_training_images)
+        self.images, self.labels = gen_x_flat_cases(number_of_training_images)
         self.lrate = lr
         if ann_type == "rlu":
-            self.build_rectified_linear_ann(nb,nh)
+            self.build_rectified_linear_ann(nb, nh)
         elif ann_type == "sigmoid":
             self.build_sigmoid_ann(nb, nh)
+        elif ann_type == "ht":
+            self.build_hyperbolic_tangent_ann(nb, nh)
+        elif ann_type =="sigmoid2":
+            self.build_sigmoid2_ann(nb, nh, 700)
+        elif ann_type == "rlu2":
+            self.build_rectified_linear2_ann(nb, nh, 700)
 
-    def build_rectified_linear_ann(self,nb,nh):
+    def build_rectified_linear_ann(self, nb, nh):
         '''
         Builds a neural network, using rectified linear units as the activation function.
         '''
+        print("Building rectified linear ann")
         w1 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nb,nh)))
         w2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nh,10)))
         input = T.dvector('input')
@@ -36,8 +43,6 @@ class ANN():
         b2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=10))
         x1 = T.switch(T.dot(input,w1) + b1 > 0, T.dot(input,w1) + b1, 0)
         x2 = T.switch(T.dot(x1,w2) + b2 > 0, T.dot(x1,w2) + b2, 0)
-        #x1 = Tann.relu(T.dot(input,w1) + b1)
-        #x2 = Tann.relu(T.dot(x1,w2) + b2)
         error = T.sum(pow((target - x2), 2))
         params = [w1, b1, w2, b2]
         gradients = T.grad(error, params)
@@ -45,11 +50,37 @@ class ANN():
 
         self.trainer = theano.function(inputs=[input, target], outputs=error, updates=backprops, allow_input_downcast=True)
         self.predictor = theano.function(inputs=[input], outputs=[x2], allow_input_downcast=True)
+
+    def build_rectified_linear2_ann(self, nb, nh, nh2):
+        '''
+        Builds a neural network, using rectified linear units 2 as the activation function.
+        '''
+        print("Building rectified linear ann")
+        w1 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nb,nh)))
+        w2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nh,nh2)))
+        w3 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nh2, 10)))
+        input = T.dvector('input')
+        target = T.wvector('target')
+        b1 = theano.shared(np.random.uniform(low=-.1, high=.1, size=nh))
+        b2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=nh2))
+        b3 = theano.shared(np.random.uniform(low=-.1, high=.1, size=10))
+        x1 = T.switch(T.dot(input,w1) + b1 > 0, T.dot(input,w1) + b1, 0)
+        x2 = T.switch(T.dot(x1,w2) + b2 > 0, T.dot(x1,w2) + b2, 0)
+        x3 = T.switch(T.dot(x2, w3) + b3 > 0, T.dot(x2, w3) + b2, 0)
+        error = T.sum(pow((target - x3), 3))
+        params = [w1, b1, w2, b2, w3, b3]
+        gradients = T.grad(error, params)
+        backprops = [(p, p - self.lrate*g) for p,g in zip(params,gradients)]
+
+        self.trainer = theano.function(inputs=[input, target], outputs=error, updates=backprops, allow_input_downcast=True)
+        self.predictor = theano.function(inputs=[input], outputs=[x3], allow_input_downcast=True)
+    
     
     def build_sigmoid_ann(self,nb,nh):
         '''
         Builds a neural network, using sigmoids as the activation function.
         '''
+        print("Building sigmoid ann")
         w1 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nb,nh)))
         w2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nh,10)))
         input = T.dvector('input')
@@ -58,6 +89,51 @@ class ANN():
         b2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=10))
         x1 = Tann.sigmoid(T.dot(input,w1) + b1)
         x2 = Tann.sigmoid(T.dot(x1,w2) + b2)
+        error = T.sum(pow((target - x2), 2))
+        params = [w1, b1, w2, b2]
+        gradients = T.grad(error, params)
+        backprop_acts = [(p, p - self.lrate*g) for p,g in zip(params,gradients)]
+
+        self.trainer = theano.function(inputs=[input, target], outputs=error, updates=backprop_acts, allow_input_downcast=True)
+        self.predictor = theano.function(inputs=[input], outputs=[x3], allow_input_downcast=True)
+
+    def build_sigmoid2_ann(self, nb, nh, nh2):
+        '''
+        Builds a neural network, using sigmoids as the activation function.
+        '''
+        print("Building sigmoid 2 ann")
+        w1 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nb,nh)))
+        w2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nh,nh2)))
+        w3 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nh2,10)))
+        input = T.dvector('input')
+        target = T.wvector('target')
+        b1 = theano.shared(np.random.uniform(low=-.1, high=.1, size=nh))
+        b2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=nh2))
+        b3 = theano.shared(np.random.uniform(low=-.1, high=.1, size=10))
+        x1 = Tann.sigmoid(T.dot(input,w1) + b1)
+        x2 = Tann.sigmoid(T.dot(x1, w2) + b2)
+        x3 = Tann.sigmoid(T.dot(x2, w3) + b3)
+        error = T.sum(pow((target - x3), 3))
+        params = [w1, b1, w2, b2, w3, b3]
+        gradients = T.grad(error, params)
+        backprop_acts = [(p, p - self.lrate*g) for p,g in zip(params,gradients)]
+
+        self.trainer = theano.function(inputs=[input, target], outputs=error, updates=backprop_acts, allow_input_downcast=True)
+        self.predictor = theano.function(inputs=[input], outputs=[x3], allow_input_downcast=True)
+
+    def build_hyperbolic_tangent_ann(self,nb,nh):
+        '''
+        Builds a neural network, using hyperbolic tangent as the activation function.
+        '''
+        print("Building hyperbolic tangent ann")
+        w1 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nb,nh)))
+        w2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nh,10)))
+        input = T.dvector('input')
+        target = T.wvector('target')
+        b1 = theano.shared(np.random.uniform(low=-.1, high=.1, size=nh))
+        b2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=10))
+        x1 = T.tanh(T.dot(input,w1) + b1)
+        x2 = T.tanh(T.dot(x1,w2) + b2)
         error = T.sum(pow((target - x2), 2))
         params = [w1, b1, w2, b2]
         gradients = T.grad(error, params)
@@ -79,7 +155,7 @@ class ANN():
                 tar = [0] * 10
                 tar[self.labels[j]] = 1
                 error += self.trainer(self.images[j], tar)
-            print(error)
+            print(type(error))
             print("avg error pr image: " + str(error/len(self.images)))
             errors.append(error)
         return errors
@@ -138,11 +214,11 @@ class ANN():
 
 
 if __name__ == "__main__":
-    nr_of_training_images = 60000
-    nr_of_testing_images = 10000
-    ann_type = input("Enter sigmoid to build a sigmoid ann or rlu for rectified linear units ann: ")
+    number_of_training_images = 6000
+    number_of_testing_images = 1000
+    ann_type = input("Options: sigmoid, sigmoid2, rlu, ht, rlu2: ")
     print("---------")
-    image_recog = ANN(nr_of_training_images, ann_type = "rlu")
+    image_recog = ANN(number_of_training_images, ann_type)
     image_recog.preprosessing(image_recog.images)
     errors = []
     print("Successfully loaded the images and built the neural network")
@@ -152,8 +228,8 @@ if __name__ == "__main__":
         if int(num) == 1:
             errors = image_recog.do_training(epochs=1, errors=errors)
         elif int(num) == 2:
-            test_labels, result = image_recog.do_testing(nr_of_testing_images)
+            test_labels, result = image_recog.do_testing(number_of_testing_images)
         elif int(num) == 3:
-            results = blind_test(images)
+            results = image_recog.blind_test(images)
         else:
             errors = image_recog.do_training(epochs=int(action), errors=errors)
