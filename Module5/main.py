@@ -13,12 +13,14 @@ class ANN():
     '''
 
 
-    def __init__(self, number_of_training_images, ann_type, nb=784, nh=700, lr=0.001):
+    def __init__(self, number_of_training_images, ann_type = None, nb=784, nh=700, lr=0.001, custom = False, layer_list = None):
         '''
         Initializes by loading the images and building the neural network structure.
         '''
         self.images, self.labels = gen_x_flat_cases(number_of_training_images)
         self.lrate = lr
+        if custom:
+            self.build_custom_ann(layer_list, ann_type)
         if ann_type == "rlu":
             self.build_rectified_linear_ann(nb, nh)
         elif ann_type == "sigmoid":
@@ -26,7 +28,7 @@ class ANN():
         elif ann_type == "ht":
             self.build_hyperbolic_tangent_ann(nb, nh)
         elif ann_type =="sigmoid2":
-            self.build_sigmoid2_ann(nb, nh, 700)
+            self.build_sigmoid2_ann(nb, nh, 600)
         elif ann_type == "rlu2":
             self.build_rectified_linear2_ann(nb, nh, 700)
 
@@ -39,17 +41,15 @@ class ANN():
         w2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nh,10)))
         input = T.dvector('input')
         target = T.wvector('target')
-        b1 = theano.shared(np.random.uniform(low=-.1, high=.1, size=nh))
-        b2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=10))
-        x1 = T.switch(T.dot(input,w1) + b1 > 0, T.dot(input,w1) + b1, 0)
-        x2 = T.switch(T.dot(x1,w2) + b2 > 0, T.dot(x1,w2) + b2, 0)
+        x1 = T.switch(T.dot(input,w1) > 0, T.dot(input,w1), 0)
+        x2 = T.switch(T.dot(x1,w2) > 0, T.dot(x1,w2), 0)
         error = T.sum(pow((target - x2), 2))
-        params = [w1, b1, w2, b2]
+        params = [w1, w2]
         gradients = T.grad(error, params)
         backprops = [(p, p - self.lrate*g) for p,g in zip(params,gradients)]
 
         self.trainer = theano.function(inputs=[input, target], outputs=error, updates=backprops, allow_input_downcast=True)
-        self.predictor = theano.function(inputs=[input], outputs=[x2], allow_input_downcast=True)
+        self.predictor = theano.function(inputs=[input], outputs=x2, allow_input_downcast=True)
 
     def build_rectified_linear2_ann(self, nb, nh, nh2):
         '''
@@ -61,19 +61,16 @@ class ANN():
         w3 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nh2, 10)))
         input = T.dvector('input')
         target = T.wvector('target')
-        b1 = theano.shared(np.random.uniform(low=-.1, high=.1, size=nh))
-        b2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=nh2))
-        b3 = theano.shared(np.random.uniform(low=-.1, high=.1, size=10))
-        x1 = T.switch(T.dot(input,w1) + b1 > 0, T.dot(input,w1) + b1, 0)
-        x2 = T.switch(T.dot(x1,w2) + b2 > 0, T.dot(x1,w2) + b2, 0)
-        x3 = T.switch(T.dot(x2, w3) + b3 > 0, T.dot(x2, w3) + b2, 0)
-        error = T.sum(pow((target - x3), 3))
-        params = [w1, b1, w2, b2, w3, b3]
+        x1 = T.switch(T.dot(input,w1) > 0, T.dot(input,w1), 0)
+        x2 = T.switch(T.dot(x1,w2) > 0, T.dot(x1,w2), 0)
+        x3 = T.switch(T.dot(x2, w3) > 0, T.dot(x2, w3), 0)
+        error = T.sum(pow((target - x3), 2))
+        params = [w1, w2, w3]
         gradients = T.grad(error, params)
         backprops = [(p, p - self.lrate*g) for p,g in zip(params,gradients)]
 
         self.trainer = theano.function(inputs=[input, target], outputs=error, updates=backprops, allow_input_downcast=True)
-        self.predictor = theano.function(inputs=[input], outputs=[x3], allow_input_downcast=True)
+        self.predictor = theano.function(inputs=[input], outputs=x3, allow_input_downcast=True)
     
     
     def build_sigmoid_ann(self,nb,nh):
@@ -85,17 +82,15 @@ class ANN():
         w2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nh,10)))
         input = T.dvector('input')
         target = T.wvector('target')
-        b1 = theano.shared(np.random.uniform(low=-.1, high=.1, size=nh))
-        b2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=10))
-        x1 = Tann.sigmoid(T.dot(input,w1) + b1)
-        x2 = Tann.sigmoid(T.dot(x1,w2) + b2)
+        x1 = Tann.sigmoid(T.dot(input,w1))
+        x2 = Tann.sigmoid(T.dot(x1,w2))
         error = T.sum(pow((target - x2), 2))
-        params = [w1, b1, w2, b2]
+        params = [w1, w2]
         gradients = T.grad(error, params)
         backprop_acts = [(p, p - self.lrate*g) for p,g in zip(params,gradients)]
 
         self.trainer = theano.function(inputs=[input, target], outputs=error, updates=backprop_acts, allow_input_downcast=True)
-        self.predictor = theano.function(inputs=[input], outputs=[x3], allow_input_downcast=True)
+        self.predictor = theano.function(inputs=[input], outputs=x2, allow_input_downcast=True)
 
     def build_sigmoid2_ann(self, nb, nh, nh2):
         '''
@@ -107,19 +102,16 @@ class ANN():
         w3 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nh2,10)))
         input = T.dvector('input')
         target = T.wvector('target')
-        b1 = theano.shared(np.random.uniform(low=-.1, high=.1, size=nh))
-        b2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=nh2))
-        b3 = theano.shared(np.random.uniform(low=-.1, high=.1, size=10))
-        x1 = Tann.sigmoid(T.dot(input,w1) + b1)
-        x2 = Tann.sigmoid(T.dot(x1, w2) + b2)
-        x3 = Tann.sigmoid(T.dot(x2, w3) + b3)
-        error = T.sum(pow((target - x3), 3))
-        params = [w1, b1, w2, b2, w3, b3]
+        x1 = Tann.sigmoid(T.dot(input,w1))
+        x2 = Tann.sigmoid(T.dot(x1, w2))
+        x3 = Tann.sigmoid(T.dot(x2, w3))
+        error = T.sum(pow((target - x3), 2))
+        params = [w1, w2, w3]
         gradients = T.grad(error, params)
         backprop_acts = [(p, p - self.lrate*g) for p,g in zip(params,gradients)]
 
         self.trainer = theano.function(inputs=[input, target], outputs=error, updates=backprop_acts, allow_input_downcast=True)
-        self.predictor = theano.function(inputs=[input], outputs=[x3], allow_input_downcast=True)
+        self.predictor = theano.function(inputs=[input], outputs=x3, allow_input_downcast=True)
 
     def build_hyperbolic_tangent_ann(self,nb,nh):
         '''
@@ -130,12 +122,10 @@ class ANN():
         w2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=(nh,10)))
         input = T.dvector('input')
         target = T.wvector('target')
-        b1 = theano.shared(np.random.uniform(low=-.1, high=.1, size=nh))
-        b2 = theano.shared(np.random.uniform(low=-.1, high=.1, size=10))
-        x1 = T.tanh(T.dot(input,w1) + b1)
-        x2 = T.tanh(T.dot(x1,w2) + b2)
+        x1 = T.tanh(T.dot(input,w1))
+        x2 = T.tanh(T.dot(x1,w2))
         error = T.sum(pow((target - x2), 2))
-        params = [w1, b1, w2, b2]
+        params = [w1, w2]
         gradients = T.grad(error, params)
         backprop_acts = [(p, p - self.lrate*g) for p,g in zip(params,gradients)]
 
@@ -155,8 +145,6 @@ class ANN():
                 tar = [0] * 10
                 tar[self.labels[j]] = 1
                 error += self.trainer(self.images[j], tar)
-            print(type(error))
-            print("avg error pr image: " + str(error/len(self.images)))
             errors.append(error)
         return errors
 
@@ -211,25 +199,60 @@ class ANN():
                 count += 1
         print("statistics:", (count/float(len(self.test_labels))) * 100)
 
+    def build_custom_ann(self, layer_list, ann_type, nb = 784):
+        '''
+
+        '''
+        layer_list = [nb] + layer_list
+        input = T.dvector('input')
+        target = T.wvector('target')
+        w_list = []
+        b_list = []
+        x_list = []
+        
+        gradients = T.grad(error, params)
+        backprops = [(p, p - self.lrate*g) for p,g in zip(params,gradients)]
+
+        self.trainer = theano.function(inputs=[input, target], outputs=error, updates=backprops, allow_input_downcast=True)
+        self.predictor = theano.function(inputs=[input], outputs=x_list[-1], allow_input_downcast=True)
 
 
-if __name__ == "__main__":
+def start():
+    '''
+
+    '''
     number_of_training_images = 6000
     number_of_testing_images = 1000
-    ann_type = input("Options: sigmoid, sigmoid2, rlu, ht, rlu2: ")
+    custom = input("Custom layers: Y/N")
     print("---------")
-    image_recog = ANN(number_of_training_images, ann_type)
-    image_recog.preprosessing(image_recog.images)
+    if custom == "N" or custom == "n":
+        ann_type = input("Options: sigmoid, sigmoid2, rlu, ht, rlu2: ")
+        image_recog = ANN(number_of_training_images, ann_type)
+        image_recog.preprosessing(image_recog.images)
+    else:
+        layerlist = input("Enter layer list: ")
+        layerlist = layerlist.split()
+        for x in range(len(layerlist)):
+            layerlist[x] = int(layerlist[x])
+        image_recog = ANN(number_of_training_images, custom = True, layer_list = layerlist)
+        image_recog.preprosessing(image_recog.images)
+
     errors = []
     print("Successfully loaded the images and built the neural network")
     print("----------")
     while True:
-        num = input("Enter 1 to train the network or 2 to test the network. Enter 3 to blind test: ")
+        num = input(" 1: Train \n 2: Test \n 3: Blind test \n 4: Restart \n")
         if int(num) == 1:
             errors = image_recog.do_training(epochs=1, errors=errors)
         elif int(num) == 2:
             test_labels, result = image_recog.do_testing(number_of_testing_images)
         elif int(num) == 3:
             results = image_recog.blind_test(images)
+        elif int(num) == 4:
+            start()
         else:
             errors = image_recog.do_training(epochs=int(action), errors=errors)
+
+if __name__ == "__main__":
+    start()
+    
