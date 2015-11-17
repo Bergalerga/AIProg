@@ -30,7 +30,7 @@ class ANN():
         elif ann_type =="sigmoid2":
             self.build_sigmoid2_ann(nb, nh, 600)
         elif ann_type == "rlu2":
-            self.build_rectified_linear2_ann(nb, nh, 700)
+            self.build_rectified_linear2_ann(nb, nh, 700, ann_type = ann_type)
 
     def build_rectified_linear_ann(self, nb, nh):
         '''
@@ -199,18 +199,42 @@ class ANN():
                 count += 1
         print("statistics:", (count/float(len(self.test_labels))) * 100)
 
-    def build_custom_ann(self, layer_list, ann_type, nb = 784):
+    def build_custom_ann(self, layer_list, ann_type = "rlu", nb = 784):
         '''
 
         '''
+        print(ann_type)
         layer_list = [nb] + layer_list
         input = T.dvector('input')
         target = T.wvector('target')
         w_list = []
-        b_list = []
         x_list = []
-        
-        gradients = T.grad(error, params)
+        w_list.append(theano.shared(np.random.uniform(low=-.1, high=.1, size=(layer_list[0],layer_list[1]))))
+        if ann_type == "rlu":
+            x_list.append(T.switch(T.dot(input,w_list[0]) > 0, T.dot(input,w_list[0]), 0))
+        elif ann_type == "sigmoid":
+            x_list.append(Tann.sigmoid(T.dot(input, w_list[0])))
+        elif ann_type == "ht":
+            x_list.append(T.tanh(T.dot(input, w_list[0])))
+
+        for count in range(0, len(layer_list) - 2):
+            print("looping")
+            w_list.append(theano.shared(np.random.uniform(low=-.1, high=.1, size=(layer_list[count + 1],layer_list[count + 2]))))
+            if ann_type=="rlu":
+                x_list.append(T.switch(T.dot(x_list[count],w_list[count + 1]) > 0, T.dot(x_list[count], w_list[count + 1]), 0))
+            elif ann_type == "sigmoid":
+                x_list.append(Tann.sigmoid(T.dot(x_list[count],w_list[count + 1])))
+            elif ann_type == "ht":
+                x_list.append(T.tanh(T.dot(x_list[count],w_list[count + 1])))
+
+        print(len(x_list))
+        print(len(w_list))
+        w_list.append(theano.shared(np.random.uniform(low=-.1, high=.1, size=(layer_list[-1], 10))))
+        x_list.append(T.switch(T.dot(x_list[-1],w_list[-1]) > 0, T.dot(x_list[-1],w_list[-1]), 0))
+
+        error = T.sum(pow((target - x_list[-1]), 2))
+        params = w_list
+        gradients = T.grad(error, params) 
         backprops = [(p, p - self.lrate*g) for p,g in zip(params,gradients)]
 
         self.trainer = theano.function(inputs=[input, target], outputs=error, updates=backprops, allow_input_downcast=True)
@@ -224,9 +248,9 @@ def start():
     number_of_training_images = 6000
     number_of_testing_images = 1000
     custom = input("Custom layers: Y/N")
+    ann_type = input("Options: sigmoid, rlu, ht: ")
     print("---------")
     if custom == "N" or custom == "n":
-        ann_type = input("Options: sigmoid, sigmoid2, rlu, ht, rlu2: ")
         image_recog = ANN(number_of_training_images, ann_type)
         image_recog.preprosessing(image_recog.images)
     else:
@@ -234,7 +258,7 @@ def start():
         layerlist = layerlist.split()
         for x in range(len(layerlist)):
             layerlist[x] = int(layerlist[x])
-        image_recog = ANN(number_of_training_images, custom = True, layer_list = layerlist)
+        image_recog = ANN(number_of_training_images, custom = True, layer_list = layerlist, ann_type = ann_type)
         image_recog.preprosessing(image_recog.images)
 
     errors = []
